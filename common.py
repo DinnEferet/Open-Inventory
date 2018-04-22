@@ -1,5 +1,13 @@
+'''
+@name Open Inventory 1.0 GUI Specs
+@description Usefule specifications for Open Inventory GUI
+@author Ross Hart
+@first_documentation Sunday, 22nd April, 2018
+'''
 
-#data dictionaries
+#Dictionaries
+
+#element colors
 colors={
 	'outer':'grey88', 'header':'alice blue', 'header text':'grey22', 'footer':'grey23', 
 	'footer text':'grey63', 'option':'grey25', 'option text':'grey79', 'menu':'grey77',
@@ -7,6 +15,7 @@ colors={
 }
 
 
+#text fonts
 fonts={
 	'common text':'Ubuntu', 'msg':'Trebuchet MS'
 }

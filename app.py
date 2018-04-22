@@ -1,48 +1,59 @@
-from Tkinter import *
-import Pmw
-import re
-import os
-import webbrowser
-import MySQLdb as sql
-import datetime as date
-import common
+'''
+@name Open Inventory 1.0
+@description A simple open-source inventory management system
+@author Ross Hart
+@first_documentation Sunday, 22nd April, 2018
+'''
+
+#imports
+
+from Tkinter import * #modules for gui
+import Pmw #module for gui
+import re #module for matching regular expressions
+import os #module for interracting with host OS
+import webbrowser #module for opening links in user's browser
+import MySQLdb as sql #module for MySQL database connections
+import datetime as date #module for date
+import common #python file with useful specifications
 
 
-#primary window Header class:
+#Classes
+
+#window header class
 class Header:
 	def __init__(self, master, text):
-		self.header_frame=Frame(
+		self.header_frame=Frame( #frame for window header
 			master, width=800, borderwidth=2, relief=SUNKEN, bg=common.colors['outer']
 		)
-		self.header_frame.pack(fill=X, side=TOP)
+		self.header_frame.pack(fill=X, side=TOP) #positions frame
 
-		self.header=Label(
+		self.header=Label( #label for window header
 			self.header_frame, text=text, font=(common.fonts['common text'], 13, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], padx=20, pady=3, 
 			borderwidth=2, relief=SUNKEN
 		)
 
-		self.header.pack(side=LEFT)
+		self.header.pack(side=LEFT) #positions label
 
 
-#primary window Footer class:
+#window footer class
 class Footer:
 	def __init__(self, master):
-		self.footer_frame=Frame(
+		self.footer_frame=Frame( #frame for footer
 			master, borderwidth=2, relief=RAISED, height=200
 		)
-		self.footer_frame.pack(fill=X, side=BOTTOM)
+		self.footer_frame.pack(fill=X, side=BOTTOM) #positions frame
 
-		self.footer=Label(
+		self.footer=Label( #label for footer; text is Copyright info
 			self.footer_frame, text='Copyright '+u'\N{COPYRIGHT SIGN}'.encode('utf-8')+
 			' 2018 Eferet Tech. All rights reserved.', font=(common.fonts['common text'], 10, 'normal'), 
 			fg=common.colors['footer text'], bg=common.colors['footer'], pady=40
 		)
 	
-		self.footer.pack(side=TOP, fill=BOTH)
+		self.footer.pack(side=TOP, fill=BOTH) #positions label
 
 
-#Home window class:
+#Home window class
 class Home:
 	def __init__(self, master=None):
 		self.master=master
@@ -50,17 +61,17 @@ class Home:
 		self.master.geometry('800x500+300+100')
 		self.master.resizable(0,0)
 
-		self.master_frame=Frame(
+		self.master_frame=Frame( #frame for window items
 			self.master, width=800, height=600, bg=common.colors['outer']
 		)
 
 
-		self.menu_frame=Frame(
+		self.menu_frame=Frame( #frame for top menu
 			self.master_frame, width=800, borderwidth=2, relief=RAISED, bg=common.colors['menu']
 		)
 		self.menu_frame.pack(fill=X)
 
-		self.extras=Menubutton(
+		self.extras=Menubutton( #menu button for top menu
 			self.menu_frame, text='Extras', underline=0, fg=common.colors['menu text'], 
 			bg=common.colors['menu'], padx=10, pady=2, borderwidth=2, relief=GROOVE,
 			font=(common.fonts['common text'], 10, 'normal')
@@ -71,54 +82,54 @@ class Home:
 			self.extras
 		)
 
-		self.extras.menu.add_command(
+		self.extras.menu.add_command( #adds option to top menu
 			label='About Open Inventory', underline=0, command=lambda: openAbout(self.master)
 		)
-		self.extras.menu.add('separator')
+		self.extras.menu.add('separator') #adds separator
 		self.extras.menu.add_command(
 			label='Exit Open Inventory', underline=0, command=lambda: self.closeApp()
 		)
 
-		self.extras['menu']=self.extras.menu
+		self.extras['menu']=self.extras.menu #binds menu items to menu button
 		
-		self.menu_frame.tk_menuBar(self.extras)
+		self.menu_frame.tk_menuBar(self.extras) #creates frame container for menu
 
-		Header(self.master_frame, 'Open Inventory')
+		Header(self.master_frame, 'Open Inventory') #calls instance of window header class
 
 
-		self.button_frame=Frame(
+		self.button_frame=Frame( #frame for some buttons
 			self.master_frame, height=350, borderwidth=2, relief=SUNKEN, bg=common.colors['outer']
 		)
 		self.button_frame.pack(fill=BOTH)
 
-		Button(
+		Button( #login button
 			self.button_frame, text='Login', command=lambda: openLogin(self.master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=18
 		).place(relx=0.5, rely=0.2, anchor=CENTER)
 
-		Button(
+		Button( #new profile button
 			self.button_frame, text='New Bussiness Profile', command=lambda: openNewProfile(self.master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=18
 		).place(relx=0.5, rely=0.4, anchor=CENTER)
 
-		Button(
+		Button( #exit button
 			self.button_frame, text='Exit', command=lambda: self.closeApp(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=18
 		).place(relx=0.5, rely=0.6, anchor=CENTER)
 
-		Footer(self.master_frame)
+		Footer(self.master_frame) #calls instance of window footer class
 
-		self.master_frame.pack(expand=YES, fill=BOTH)
+		self.master_frame.pack(expand=YES, fill=BOTH) #positions the container frame for window
 
 
 	def closeApp(self):
-		self.master.destroy()
+		self.master.destroy() #closes window
 
 
-#Inventory window class:
+#Inventory window class
 class MyInventory:
 	def __init__(self, master, user_fname, user_lname,  user_uname, user_bname):
 		master.withdraw()
@@ -127,22 +138,24 @@ class MyInventory:
 		self.master.geometry('800x500+300+100')
 		self.master.resizable(0,0)
 
-		self.menu_frame=Frame(
+		self.menu_frame=Frame( #container frame
 			self.master, width=800, borderwidth=2, relief=RAISED, bg=common.colors['menu']
 		)
-		self.menu_frame.pack(fill=X)
+		self.menu_frame.pack(fill=X) #positions container frame
 
-		self.extras=Menubutton(
+		self.extras=Menubutton( #menu button for top menu
 			self.menu_frame, text='Extras', underline=0, fg=common.colors['menu text'], 
 			bg=common.colors['menu'], padx=10, pady=2, borderwidth=2, relief=GROOVE,
 			font=(common.fonts['common text'], 10, 'normal')
 		)
 
-		self.extras.pack(side=RIGHT, padx=10)
+		self.extras.pack(side=RIGHT, padx=10) #positions menu button
 		
-		self.extras.menu=Menu(self.extras)
+		self.extras.menu=Menu( #initializes menu
+			self.extras
+		)
 
-		self.extras.menu.add_command(
+		self.extras.menu.add_command( #adds option to menu
 			label='About Open Inventory', underline=0, command=lambda: openAbout(self.master)
 		)
 		self.extras.menu.add('separator')
@@ -150,176 +163,163 @@ class MyInventory:
 			label='Logout', underline=0, command=lambda: self.closeApp()
 		)
 
-		self.extras['menu']=self.extras.menu
+		self.extras['menu']=self.extras.menu #binds menu items to menu button
 		
-		self.menu_frame.tk_menuBar(self.extras)
+		self.menu_frame.tk_menuBar(self.extras) #binds menu frame to menu button
 
 
 		Header(self.master, user_bname+' Inventory')
 		
-		self.button_frame=Frame(
+		self.button_frame=Frame( #container frame for user inventory options
 			self.master, width=200, height=300, borderwidth=2, relief=SUNKEN, bg=common.colors['outer']
 		)
-		self.button_frame.place(relx=0.01, rely=0.15)
+		self.button_frame.place(relx=0.01, rely=0.15) #positions container frame
 
 
-		self.inventory_frame=Frame(
+		self.inventory_frame=Frame( #container frame for user inventory items
 			self.master, width=520, height=300, borderwidth=2, relief=SUNKEN, 
 			bg=common.colors['inventory']
 		)
 		self.inventory_frame.place(relx=0.3, rely=0.15)
 
 
-		self.columns_frame=Frame(
+		self.columns_frame=Frame( #container frame for user inventory heading
 			self.inventory_frame, width=516, height=30, borderwidth=2, relief=RAISED, 
 			bg=common.colors['menu']
 		)
 		self.columns_frame.place(relx=0.0, rely=0.0)
 
 
-		Button(
+		Button( #sell item button
 			self.button_frame, text='Make Sale', 
 			command=lambda: openSellItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.1)
 
-		Button(
+		Button( #add new item button
 			self.button_frame, text='Add Item', 
 			command=lambda: openAddItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.25)
 
-		Button(
+		Button( #edit existing item button
 			self.button_frame, text='Edit Item',
 			command=lambda: openEditItem(self.master, master, self.inventory_frame, user_uname, user_bname, None),
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.4)
 
-		Button(
+		Button( #delete item button
 			self.button_frame, text='Delete Item', 
 			command=lambda: openDropItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.55)
 
-		Button(
+		Button( #logout button
 			self.button_frame, text='Logout', command=lambda: self.closeApp(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.7)
 
 
-		Label(
+		Label( #title label for item name
 			self.columns_frame, text='Item', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=25,
 			borderwidth=2, relief=SUNKEN
 		).place(relx=0.02, rely=0.16)
 
-		Label(
+		Label( #title label for item quantity 
 			self.columns_frame, text='Quantity Available', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
 			borderwidth=2, relief=SUNKEN
 		).place(relx=0.4, rely=0.16)
 
-		Label(
+		Label( #title label for item price
 			self.columns_frame, text='Price per Unit (N)', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
 			borderwidth=2, relief=SUNKEN
 		).place(relx=0.7, rely=0.16)
 
 
-		self.db=sql.connect(
+		self.db=sql.connect( #connects to MySQL database using imported sql module
 			host='localhost', user='root', passwd='#rossql13', db='open_inventory_desktop'
 		)
 
-		self.query=self.db.cursor()
+		self.query=self.db.cursor() #creates cursor for query
 
-		populateInventory(user_uname, self.inventory_frame, self.query)	
-
-
-		Footer(self.master)
-
-		self.master.protocol('WM_DELETE_WINDOW', lambda: self.closeApp())
+		populateInventory(user_uname, self.inventory_frame, self.query)	#populates inventory frame with items in user's inventory
 
 
-	def search(self, string, nav_frame):
-		find=string.get()
+		Footer(self.master) 
 
-		self.db=sql.connect(
-			host='localhost', user='root', passwd='#rossql13', db='open_inventory_desktop'
-		)
+		self.master.protocol('WM_DELETE_WINDOW', lambda: self.closeApp()) #sets protocol of default close button to class method for closing window
 
-		self.query=db.cursor()
 
-		cmd=query.execute(
-			"""INSERT INTO %s_items VALUES ('%s', %d, %f)""" % (user_uname.lower(), iname, int(iqty), float(iprice))
-		)
-
-	def ignore(self):
+	def ignore(self): #lazy method
 		pass
 
-	def closeApp(self):
-		closeToplevel(self.master, self.master.master, None, False)
+	def closeApp(self): #defines closing actions for inventory window
+		closeToplevel(self.master, self.master.master, None, False) #calls outer method
 		self.master.master.geometry('800x500+300+100')
 		self.master.master.deiconify()
 
 
-#Inventory window helper methods:
+#Methods (Inventory window)
 
-#inventory population method:
+#inventory population method
 def populateInventory(user_uname, inventory_frame, query):
 
-	inventory_items=query.execute(
+	inventory_items=query.execute( #gets all items in user inventory in alphabetical order
 		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
-	inventory=query.fetchall()
+	inventory=query.fetchall() #gets rows from table
 
 	if(inventory_items>0):
-		data_pane=Pmw.ScrolledCanvas(
+		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
 			inventory_frame, hull_width=519, hull_height=270, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
-		data_container=data_pane.interior()
+		data_container=data_pane.interior() #initializes interior of canvas
 
 		i=0.01
 		j=10
 		for row in inventory:
-			data_frame=Frame(
+			data_frame=Frame( #frame for item row
 				data_container, width=519, height=25, borderwidth=2, relief=SUNKEN, 
 				bg=common.colors['outer']
 			)
 			data_frame.place(relx=0.0, rely=i)
 
-			Label(
+			Label( #label for item name
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
 				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
 			).place(relx=0.02, rely=0.1)
 
-			Label(
+			Label( #label for item quantiy 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
 			).place(relx=0.4, rely=0.1)
 
-			Label(
+			Label( #label for item price
 				data_frame, text=row[2], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
 
-			data_pane.create_window(300, j, window=data_frame)
+			data_pane.create_window(300, j, window=data_frame) #binds frame to canvas
 			i+=0.05
 			j+=30
 
-		data_pane.place(relx=0.0, rely=0.1)
-		data_pane.resizescrollregion()
+		data_pane.place(relx=0.0, rely=0.1) #positions scrollable canvas
+		data_pane.resizescrollregion() #activates scrolling when items exceed canvas size
 	else:
-		Message(
+		Message( #message if user has no items in inventory 
 			inventory_frame, text='You have nothing in your inventory.', width=350,
 			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text'],
@@ -327,7 +327,7 @@ def populateInventory(user_uname, inventory_frame, query):
 		).place(relx=0.2, rely=0.24)
 
 
-#inventory item addition methods:
+#inventory item addition methods
 def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
@@ -487,7 +487,7 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 	closeToplevel(add_window, master, master_master, True)
 
 
-#inventory item deletion methods:
+#inventory item deletion methods
 def openDropItem(master, master_master, inventory_frame, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
@@ -619,7 +619,7 @@ def dropItem(confirm_window, add_window, master, master_master, inventory_frame,
 	closeToplevel(add_window, master, master_master, True)
 
 
-#inventory item editing methods:
+#inventory item editing methods
 def openEditItem(master, master_master, inventory_frame, user_uname, user_bname, old_item):
 	item_list=()
 
@@ -1009,10 +1009,8 @@ def sellItem(confirm_window, add_window, master, master_master, inventory_frame,
 	closeToplevel(add_window, master, master_master, True)
 
 
-#hack methods; ensure that toplevel windows one level above the login/sign-up alerts behave properly: 
+#hacks; ensure that toplevel windows one level above the login/sign-up alerts behave properly 
 def xopenAlert(add_window, master, master_master, message, leave):
-	#add_window, inventory, root
-
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
 	alert_window.geometry('400x100+500+300')
@@ -1044,8 +1042,6 @@ def xopenAlert(add_window, master, master_master, message, leave):
 
 
 def xcloseToplevel(victim, vmaster, vmaster_master, vmaster_master_master):
-	#alert_window, add_window, inventory, home
-
 	victim.grab_release()
 
 	vmaster.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(vmaster, vmaster_master, vmaster_master_master, True))
@@ -1053,9 +1049,9 @@ def xcloseToplevel(victim, vmaster, vmaster_master, vmaster_master_master):
 	victim.destroy()
 
 
-#Home window helper methods:
+#Methods (Home window)
 
-#user login methods:
+#user login methods
 def openLogin(lmaster):
 	login_window=Toplevel(lmaster)
 	login_window.title('Login')
@@ -1150,7 +1146,7 @@ def login(master, master_master, uname, pwd):
 		openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Got it')
 
 
-#user registration methods:
+#user registration methods
 def openNewProfile(pmaster):
 	newprofile_window=Toplevel(pmaster)
 	newprofile_window.title('New Business Profile')
@@ -1386,7 +1382,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 		openInventory(master_master, (data[0])[0], (data[0])[1], (data[0])[2], (data[0])[5])
 	
 
-#alert message window method:
+#alert message window method; opens aller with speficied message
 def openAlert(master, master_master, message, leave):
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
@@ -1417,7 +1413,7 @@ def openAlert(master, master_master, message, leave):
 	alert_window.mainloop()
 
 
-#about Open Inventory window method: #fix bug
+#about Open Inventory window method
 def openAbout(abtmaster):
 	about_window=Toplevel(abtmaster)
 	about_window.title('')
@@ -1441,7 +1437,7 @@ def openAbout(abtmaster):
 	about.pack(side=TOP, fill=X)
 
 	link=Label(
-		about_window, text='https://github.com/DinnEferet', font=(common.fonts['common text'], 10, 'normal'),
+		about_window, text='https://github.com/DinnEferet/Open-Inventory', font=(common.fonts['common text'], 10, 'normal'),
 		fg=common.colors['menu text']
 	)
 	link.pack(side=TOP, fill=X)
@@ -1467,16 +1463,17 @@ def openAbout(abtmaster):
 	about_window.mainloop()
 
 
+#method for opening GitHub for Open Inventoy 1.0
 def toGitHub(event):
-	webbrowser.open_new(r"https://github.com/DinnEferet")
+	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory") #opens Open Inventory GitHub repository in user's browser
 
 
-#Inventory window instaniation method:
+#Inventory window instaniation method
 def openInventory(imaster, user_fname, user_lname, user_uname, user_bname):
 	inventory=MyInventory(imaster, user_fname, user_lname, user_uname, user_bname)
 
 
-#toplevel window closing method:
+#toplevel window closing method
 def closeToplevel(victim, vmaster, vmaster_master, vmaster_is_inventory):
 	if(vmaster_is_inventory==True):
 		vmaster.protocol('WM_DELETE_WINDOW', lambda: restoreInventoryDefaultClose(vmaster, vmaster_master))
@@ -1490,7 +1487,7 @@ def closeToplevel(victim, vmaster, vmaster_master, vmaster_is_inventory):
 	victim.destroy()
 
 
-#hack method; restores default closing behavior of Inventory window:
+#hack; restores default closing behavior of Inventory window
 def restoreInventoryDefaultClose(victim, vmaster):
 	closeToplevel(victim, vmaster, None, False)
 	vmaster.geometry('800x500+300+100')
@@ -1503,9 +1500,9 @@ def __ignore():
 	pass
 
 
+
+
 #instantiates Home window:
 root=Tk()
-
 home=Home(root)
-
 root.mainloop()
