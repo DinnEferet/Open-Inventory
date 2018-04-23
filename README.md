@@ -10,7 +10,7 @@ Open-source
 GNU General Public License v3.0
 
 ### Description:
-Open Inventory is a simple, open-source inventory management system. It is my first GUI application, written as an individual project for a Computer Science course I'm doing.
+Open Inventory is a simple, open-source inventory management system. It is my first application, written as an individual project for a Computer Science course I'm doing at the time of writing this README.
 
 ### Languages:
 * Python (front end)
