@@ -154,10 +154,7 @@ class MyInventory:
 		self.extras.menu=Menu( #initializes menu
 			self.extras
 		)
-
-		self.extras.menu.add_command( #adds option to menu
-			label='About Open Inventory', underline=0, command=lambda: openAbout(self.master)
-		)
+		
 		self.extras.menu.add('separator')
 		self.extras.menu.add_command(
 			label='Logout', underline=0, command=lambda: self.closeApp()
