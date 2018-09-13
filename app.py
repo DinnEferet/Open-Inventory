@@ -1138,7 +1138,7 @@ def login(master, master_master, uname, pwd):
 		data=query.fetchall()
 
 		master.destroy()
-		openInventory(master_master, (data[0])[0], (data[0])[1], (data[0])[2], (data[0])[5])
+		openInventory(master_master, (data[0])[0], (data[0])[1], (data[0])[2], (data[0])[4])
 	else:
 		openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Got it')
 
@@ -1353,7 +1353,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 
 	
 	new_profile=query.execute(
-		"""INSERT INTO user_accounts VALUES ('%s', '%s', '%s', '%s', 1, '%s', '%s')""" % (p1, p2, p4, p5, p3, date.datetime.now().strftime('%Y/%m/%d'))
+		"""INSERT INTO user_accounts VALUES ('%s', '%s', '%s', '%s', '%s', '%s')""" % (p1, p2, p4, p5, p3, date.datetime.now().strftime('%Y/%m/%d'))
 	)
 
 	save_transactions=query.execute(
@@ -1376,7 +1376,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 		data=query.fetchall()
 
 		master.destroy()
-		openInventory(master_master, (data[0])[0], (data[0])[1], (data[0])[2], (data[0])[5])
+		openInventory(master_master, (data[0])[0], (data[0])[1], (data[0])[2], (data[0])[4])
 	
 
 #alert message window method; opens aller with speficied message
