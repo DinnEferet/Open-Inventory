@@ -14,7 +14,7 @@ Open Inventory is a simple, python-based, open-source inventory management syste
 
 ### Languages:
 * Python (user interface, programming logic, business rules)
-* MySQL (database functionality)
+* MySQL (database functionalities)
 
 ### Python Modules:
 * Tkinter, Pmw (GUI design)
