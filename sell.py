@@ -102,7 +102,7 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no inventory items to sell! Maybe add a few?', 'Got it')
+		ops.openAlert(master, master_master, 'You have no items to sell! \nMaybe add a few?', 'Okay')
 
 
 def confirmSellItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty):
@@ -111,12 +111,12 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 	p3=iqty.get()
 
 	if(p3==''):
-		ops.xopenAlert(add_window, master, master_master, 'Please enter a quanity to sell!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Please enter a quanity to sell!', 'Okay')
 
 	match_q=re.search(r'^\d+$', p3)
 
 	if(not match_q):
-		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Okay')
 	
 
 	db=sql.connect(
@@ -134,7 +134,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 	stored_iqty=(item[0])[0]
 
 	if(int(p3)>int(stored_iqty)):
-		ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

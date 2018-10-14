@@ -129,7 +129,7 @@ def openEditItem(master, master_master, inventory_frame, user_uname, user_bname,
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no inventory items to edit! Maybe add a few?', 'Got it')
+		ops.openAlert(master, master_master, 'You have no items to edit! \nMaybe add a few?', 'Okay')
 
 
 def confirmEditItem(add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):
@@ -141,15 +141,15 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, user_una
 
 	for p in (p3, p4, p5):
 		if(p==''):
-			ops.xopenAlert(add_window, master, master_master, 'Please fill everything out!', 'Got it')
+			ops.xopenAlert(add_window, master, master_master, 'Please fill everything out!', 'Okay')
 
 	match_q=re.search(r'^\d+$', p4)
 	match_p=re.search(r'^\d+$', p5)
 
 	if(not match_q):
-		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Okay')
 	elif(not match_p):
-		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

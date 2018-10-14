@@ -46,7 +46,7 @@ class Home:
 		self.extras.pack(side=RIGHT, padx=10)
 		
 		self.extras.menu=Menu(
-			self.extras
+			self.extras, tearoff=0
 		)
 
 		self.extras.menu.add_command( #adds option to top menu

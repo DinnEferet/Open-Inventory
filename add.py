@@ -73,23 +73,23 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, text='Scan Barcode', 
 		command=lambda: ignore(), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=11
+		font=(common.fonts['common text'], 10, 'normal'), width=13
 	)
-	scan_bc.place(relx=0.37, rely=0.6)
+	scan_bc.place(relx=0.39, rely=0.6)
 
 
 	add_item=Button(
 		window, text='Add Item', 
 		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=8
+		font=(common.fonts['common text'], 10, 'normal'), width=9
 	)
 	add_item.place(relx=0.25, rely=0.8)
 
 	close=Button(
 		window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=8
+		font=(common.fonts['common text'], 10, 'normal'), width=9
 	)
 	close.place(relx=0.55, rely=0.8)
 
@@ -111,15 +111,15 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, user_unam
 
 	for p in (p1,p2,p3,p4):
 		if(p==''):
-			ops.xopenAlert(add_window, master, master_master, 'Please fill everything out!', 'Got it')
+			ops.xopenAlert(add_window, master, master_master, 'Please fill everything out!', 'Okay')
 
 	match_q=re.search(r'^\d+$', p3)
 	match_p=re.search(r'^\d+$', p4)
 
 	if(not match_q):
-		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Okay')
 	elif(not match_p):
-		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

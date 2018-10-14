@@ -11,64 +11,77 @@ import ops
 
 #inventory item deletion methods
 def openDropItem(master, master_master, inventory_frame, user_uname, user_bname):
-	window=Toplevel(master_master)
-	window.title(user_bname+' Inventory')
-	window.geometry('400x150+500+270')
-	window.resizable(0,0)
-
-	title=Message(
-		window, text='Delete Item', width=200, 
-		font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
-		fg=common.colors['menu text']
+	db=sql.connect(
+		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
-	title.place(relx=0.5, rely=0.03, anchor=N)
-	
-	iname_label=Label(
-		window, text='Item Name', font=(common.fonts['common text'], 11, 'normal'), 
-		fg=common.colors['menu text']
+
+	query=db.cursor()
+
+	inventory_has_items=query.execute(
+		"""SELECT * FROM %s_items""" % (user_uname.lower())
 	)
-	iname_label.place(relx=0.15, rely=0.3)
 
-	iname=StringVar()
+	if(inventory_has_items>0):
+		window=Toplevel(master_master)
+		window.title(user_bname+' Inventory')
+		window.geometry('400x150+500+270')
+		window.resizable(0,0)
 
-	iname_input=Entry(
-		window, width=20, textvariable=iname, font=(common.fonts['common text'], 11, 'normal'),
-		fg=common.colors['menu text']
-	)
-	iname_input.place(relx=0.4, rely=0.3)
-	iname_input.focus()
+		title=Message(
+			window, text='Delete Item', width=200, 
+			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
+			fg=common.colors['menu text']
+		)
+		title.place(relx=0.5, rely=0.03, anchor=N)
+		
+		iname_label=Label(
+			window, text='Item Name', font=(common.fonts['common text'], 11, 'normal'), 
+			fg=common.colors['menu text']
+		)
+		iname_label.place(relx=0.15, rely=0.3)
+
+		iname=StringVar()
+
+		iname_input=Entry(
+			window, width=20, textvariable=iname, font=(common.fonts['common text'], 11, 'normal'),
+			fg=common.colors['menu text']
+		)
+		iname_input.place(relx=0.4, rely=0.3)
+		iname_input.focus()
 
 
-	drop_item=Button(
-		window, text='Delete Item', 
-		command=lambda: confirmDropItem(window, master, master_master, inventory_frame, user_uname, iname), 
-		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=8
-	)
-	drop_item.place(relx=0.25, rely=0.6)
+		drop_item=Button(
+			window, text='Delete Item', 
+			command=lambda: confirmDropItem(window, master, master_master, inventory_frame, user_uname, iname), 
+			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+			font=(common.fonts['common text'], 10, 'normal'), width=10
+		)
+		drop_item.place(relx=0.25, rely=0.6)
 
-	close=Button(
-		window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
-		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=8
-	)
-	close.place(relx=0.55, rely=0.6)
+		close=Button(
+			window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
+			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+			font=(common.fonts['common text'], 10, 'normal'), width=10
+		)
+		close.place(relx=0.55, rely=0.6)
 
-	window.focus_force()
-	window.grab_set()
-	window.transient(master)
+		window.focus_force()
+		window.grab_set()
+		window.transient(master)
 
-	window.protocol('WM_DELETE_WINDOW', lambda: ops.closeToplevel(window, master, master_master, True))
-	master.protocol('WM_DELETE_WINDOW', common.__ignore)
+		window.protocol('WM_DELETE_WINDOW', lambda: ops.closeToplevel(window, master, master_master, True))
+		master.protocol('WM_DELETE_WINDOW', common.__ignore)
 
-	window.mainloop()
+		window.mainloop()
+	else:
+		ops.openAlert(master, master_master, 'You have no items to delete!', 'Okay')
 
 
 def confirmDropItem(add_window, master, master_master, inventory_frame, user_uname, iname):
 	p1=iname.get()
 
 	if(p1==''):
-		ops.xopenAlert(add_window, master, master_master, 'Please enter an item name!', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'Please enter an item name!', 'Okay')
 
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
@@ -120,7 +133,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, user_una
 
 		confirm_window.mainloop()
 	else:
-		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your Inventory! Maybe check your spelling?', 'Got it')
+		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your Inventory! Maybe check your spelling?', 'Okay')
 
 
 def dropItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname):

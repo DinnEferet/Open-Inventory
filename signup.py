@@ -146,10 +146,10 @@ def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd)
 
 	for p in (p1,p2,p3,p4,p5,p6):
 		if(p==''):
-			ops.openAlert(master, master_master, 'Please fill everything out!', 'Got it')
+			ops.openAlert(master, master_master, 'Please fill everything out!', 'Okay')
 
 	if(p5!=p6):
-		ops.openAlert(master, master_master, 'Passwords must match!\nTry again!', 'Got it')
+		ops.openAlert(master, master_master, 'Passwords must match!\nTry again!', 'Okay')
 
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
@@ -162,7 +162,7 @@ def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd)
 	)
 
 	if(used_uname>0):
-		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another', 'Got it')
+		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

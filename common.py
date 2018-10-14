@@ -68,5 +68,5 @@ colors={
 
 #text fonts
 fonts={
-	'common text':'Ubuntu', 'msg':'Trebuchet MS'
+	'common text':'Calibri', 'msg':'Trebuchet MS'
 }

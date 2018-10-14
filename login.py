@@ -84,7 +84,7 @@ def login(master, master_master, uname, pwd):
 
 	for p in (p1,p2):
 		if(p==''):
-			ops.openAlert(master, master_master, 'Please fill everything out!', 'Got it')
+			ops.openAlert(master, master_master, 'Please fill everything out!', 'Okay')
 
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
@@ -102,4 +102,4 @@ def login(master, master_master, uname, pwd):
 		master.destroy()
 		ops.openInventory(master_master, (data[0])[2], (data[0])[4])
 	else:
-		ops.openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Got it')
+		ops.openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Okay')

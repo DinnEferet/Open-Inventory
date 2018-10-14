@@ -39,7 +39,7 @@ class MyInventory:
 		self.extras.pack(side=RIGHT, padx=10) #positions menu button
 		
 		self.extras.menu=Menu( #initializes menu
-			self.extras
+			self.extras, tearoff=0
 		)
 		
 
@@ -143,7 +143,7 @@ class MyInventory:
 		self.srch=StringVar()
 
 		self.srch_input=Entry(
-			self.srch_frame, width=25, textvariable=self.srch, font=(common.fonts['common text'], 11, 'normal'),
+			self.srch_frame, width=30, textvariable=self.srch, font=(common.fonts['common text'], 11, 'normal'),
 			fg=common.colors['menu text']
 		)
 		self.srch_input.place(relx=0, rely=0.05)
