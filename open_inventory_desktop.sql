@@ -1,13 +1,15 @@
--- MySQL dump 10.13  Distrib 5.7.23, for Linux (x86_64)
+CREATE DATABASE  IF NOT EXISTS `open_inventory_desktop` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */;
+USE `open_inventory_desktop`;
+-- MySQL dump 10.13  Distrib 8.0.12, for Win64 (x86_64)
 --
--- Host: localhost    Database: open_inventory_desktop
+-- Host: 127.0.0.1    Database: open_inventory_desktop
 -- ------------------------------------------------------
--- Server version	5.7.23
+-- Server version	8.0.12
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+ SET NAMES utf8 ;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,14 +23,15 @@
 
 DROP TABLE IF EXISTS `eferet_items`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `eferet_items` (
   `item_name` varchar(33) NOT NULL,
   `quantity` int(11) DEFAULT NULL,
   `price` float DEFAULT NULL,
+  `barcode` varchar(13) DEFAULT NULL,
   PRIMARY KEY (`item_name`),
   UNIQUE KEY `item_name` (`item_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,8 +40,33 @@ CREATE TABLE `eferet_items` (
 
 LOCK TABLES `eferet_items` WRITE;
 /*!40000 ALTER TABLE `eferet_items` DISABLE KEYS */;
-INSERT INTO `eferet_items` VALUES ('Monster',666,33);
 /*!40000 ALTER TABLE `eferet_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `eferet_sales`
+--
+
+DROP TABLE IF EXISTS `eferet_sales`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `eferet_sales` (
+  `item_name` varchar(33) NOT NULL,
+  `quantity_bought` int(11) DEFAULT NULL,
+  `amount_paid` float DEFAULT NULL,
+  `date_of_sale` date DEFAULT NULL,
+  PRIMARY KEY (`item_name`),
+  UNIQUE KEY `item_name` (`item_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `eferet_sales`
+--
+
+LOCK TABLES `eferet_sales` WRITE;
+/*!40000 ALTER TABLE `eferet_sales` DISABLE KEYS */;
+/*!40000 ALTER TABLE `eferet_sales` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -47,16 +75,16 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `user_accounts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `user_accounts` (
-  `fname` varchar(45) NOT NULL,
-  `lname` varchar(45) NOT NULL,
-  `uname` varchar(45) NOT NULL,
-  `pword` varchar(45) NOT NULL,
-  `bname` varchar(45) NOT NULL,
+  `fname` varchar(33) NOT NULL,
+  `lname` varchar(33) NOT NULL,
+  `uname` varchar(100) NOT NULL,
+  `pword` varchar(100) NOT NULL,
+  `bname` varchar(100) NOT NULL,
   `date_created` date NOT NULL,
-  PRIMARY KEY (`pword`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`uname`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +93,7 @@ CREATE TABLE `user_accounts` (
 
 LOCK TABLES `user_accounts` WRITE;
 /*!40000 ALTER TABLE `user_accounts` DISABLE KEYS */;
-INSERT INTO `user_accounts` VALUES ('Ross','Hart','Eferet','eferet13','House of Eferet','2018-09-13');
+INSERT INTO `user_accounts` VALUES ('Dinn','Eferet','Eferet','eferet','Eferet Tech.','2018-10-13');
 /*!40000 ALTER TABLE `user_accounts` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -78,4 +106,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-13 15:28:04
+-- Dump completed on 2018-10-15 20:24:10
