@@ -178,15 +178,18 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 			alert_window.mainloop()
 
 
-
-
 #Inventory window instaniation method
 def openInventory(imaster, user_uname, user_bname):
 	inv=inventory.MyInventory(imaster, user_uname, user_bname)
 
+
 #about Open Inventory window method
-def openAbout(abtmaster):
-	about_window=Toplevel(abtmaster)
+def openAbout(abtmaster, abtmaster_master, master_is_inventory):
+	if(abtmaster_master==None):
+		about_window=Toplevel(abtmaster)
+	else:
+		about_window=Toplevel(abtmaster_master)
+	
 	about_window.title('')
 	about_window.geometry('400x300+500+200')
 	about_window.resizable(0,0)
@@ -217,7 +220,7 @@ def openAbout(abtmaster):
 	link.bind("<Leave>", lambda e: e.widget.config(fg=common.colors['menu text']))
 
 	close=Button(
-		about_window, text='Close', command=lambda: closeToplevel(about_window, abtmaster, None, False), 
+		about_window, text='Close', command=lambda: closeToplevel(about_window, abtmaster, abtmaster_master, master_is_inventory), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=10
 	)
@@ -228,7 +231,7 @@ def openAbout(abtmaster):
 	about_window.grab_set()
 	about_window.transient(abtmaster)
 
-	about_window.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(about_window, abtmaster, None, False))
+	about_window.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(about_window, abtmaster, abtmaster_master, master_is_inventory))
 	abtmaster.protocol('WM_DELETE_WINDOW', common.__ignore)
 
 	about_window.mainloop()
@@ -257,7 +260,7 @@ def xcloseToplevel(victim, vmaster, vmaster_master, vmaster_master_master):
 
 
 #alert message window method; opens aller with speficied message
-def openAlert(master, master_master, message, leave):
+def openAlert(master, master_master, message, leave, master_is_inventory):
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
 	alert_window.geometry('400x100+500+300')
@@ -271,7 +274,7 @@ def openAlert(master, master_master, message, leave):
 	msg.place(relx=0.5, rely=0.1, anchor=N)
 
 	close=Button(
-		alert_window, text=leave, command=lambda: closeToplevel(alert_window, master, master_master, False), 
+		alert_window, text=leave, command=lambda: closeToplevel(alert_window, master, master_master, master_is_inventory), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=10
 	)
@@ -281,7 +284,7 @@ def openAlert(master, master_master, message, leave):
 	alert_window.grab_set()
 	alert_window.transient(master)
 
-	alert_window.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(alert_window, master, master_master, False))
+	alert_window.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(alert_window, master, master_master, master_is_inventory))
 	master.protocol('WM_DELETE_WINDOW', common.__ignore)
 
 	alert_window.mainloop()

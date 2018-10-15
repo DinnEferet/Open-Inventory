@@ -44,7 +44,12 @@ class MyInventory:
 		
 
 		self.extras.menu.add_command(
-			label='Account Settings', underline=0, command=lambda: self.ignore()
+			label='Account Settings', underline=0, 
+			command=lambda: edit_account.openEditAccount(self.master, master, user_uname, user_bname)
+		)
+		self.extras.menu.add('separator')
+		self.extras.menu.add_command( #adds option to top menu
+			label='About Open Inventory', underline=0, command=lambda: ops.openAbout(self.master, master, True)
 		)
 		self.extras.menu.add('separator')
 		self.extras.menu.add_command(

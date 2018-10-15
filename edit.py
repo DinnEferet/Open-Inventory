@@ -10,7 +10,7 @@ import common #python file with useful specifications
 import ops
 
 
-def openEditItem(master, master_master, inventory_frame, user_uname, user_bname, old_item):
+def openEditItem(master, master_master, inventory_frame, user_uname, user_bname):
 	item_list=()
 
 	db=sql.connect(
@@ -18,15 +18,11 @@ def openEditItem(master, master_master, inventory_frame, user_uname, user_bname,
 	)
 
 	query=db.cursor()
-
-	if(old_item==None):
-		inventory_has_items=query.execute(
-			"""SELECT * FROM %s_items""" % (user_uname.lower())
-		)
-	else:
-		inventory_has_items=query.execute(
-			"""SELECT * FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), old_item)
-		)
+		
+	inventory_has_items=query.execute(
+		"""SELECT * FROM %s_items""" % (user_uname.lower())
+	)
+	
 
 	if(inventory_has_items>0):
 		window=Toplevel(master_master)
@@ -129,7 +125,7 @@ def openEditItem(master, master_master, inventory_frame, user_uname, user_bname,
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no items to edit! \nMaybe add a few?', 'Okay')
+		ops.openAlert(master, master_master, 'You have no items to edit! \nMaybe add a few?', 'Okay', True)
 
 
 def confirmEditItem(add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):

@@ -50,7 +50,7 @@ class Home:
 		)
 
 		self.extras.menu.add_command( #adds option to top menu
-			label='About Open Inventory', underline=0, command=lambda: ops.openAbout(self.master)
+			label='About Open Inventory', underline=0, command=lambda: ops.openAbout(self.master, None, False)
 		)
 		self.extras.menu.add('separator') #adds separator
 		self.extras.menu.add_command(
@@ -100,5 +100,6 @@ class Home:
 
 #instantiates Home window:
 root=Tk()
+root.iconbitmap(default='./icons/inventory.ico')
 home=Home(root)
 root.mainloop()

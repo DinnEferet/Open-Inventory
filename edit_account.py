@@ -1,4 +1,3 @@
-'''
 #imports
 
 from Tkinter import * #modules for gui
@@ -11,167 +10,229 @@ import common #python file with useful specifications
 import ops
 
 
-def openEditItem(master, master_master, inventory_frame, user_uname, user_bname, old_item):
-	item_list=()
-
+def openEditAccount(master, master_master, user_uname, user_bname):
 	db=sql.connect(
-		host='localhost', user='root', passwd='#rossql13', db='open_inventory_desktop'
+		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
 
 	query=db.cursor()
 
-	if(old_item==None):
-		inventory_has_items=query.execute(
-			"""SELECT * FROM %s_items""" % (user_uname.lower())
-		)
-	else:
-		inventory_has_items=query.execute(
-			"""SELECT * FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), old_item)
-		)
+	get_user_details=query.execute(
+		"""SELECT * FROM user_accounts WHERE `uname`='%s'""" % (user_uname)
+	)
+	user_details=query.fetchall()
 
-	if(inventory_has_items>0):
-		window=Toplevel(master_master)
-		window.title(user_bname+' Inventory')
-		window.geometry('550x250+420+200')
-		window.resizable(0,0)
-
-		inventory_items=query.fetchall()
-
-		title=Message(
-			window, text='Edit Item', width=200, 
-			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
-			fg=common.colors['menu text']
-		)
-		title.place(relx=0.5, rely=0.03, anchor=N)
-		
-		old_iname_label=Label(
-			window, text='Select Old Item', font=(common.fonts['common text'], 10, 'normal'), 
-			fg=common.colors['menu text']
-		)
-		old_iname_label.place(relx=0.05, rely=0.2)
-
-		for inventory_item in inventory_items:
-			item_list+=(str(inventory_item[0]),)
-
-		old_iname=Pmw.ComboBox(
-			window, listbox_width=9, dropdown=1, scrolledlist_items=item_list,
-			listheight=100, fliparrow=True
-		)
-		old_iname.place(relx=0.05, rely=0.3)
-		old_iname.selectitem(item_list[0])
+	user_details_str=(
+		str((user_details[0])[0]), 
+		str((user_details[0])[1]), 
+		str((user_details[0])[4]), 
+		str((user_details[0])[2]), 
+		str((user_details[0])[3])
+	)
 
 
-		iname_label=Label(
-			window, text='New Item Name', font=(common.fonts['common text'], 10, 'normal'), 
-			fg=common.colors['menu text']
-		)
-		iname_label.place(relx=0.45, rely=0.2)
-
-		iname=StringVar()
-
-		iname_input=Entry(
-			window, width=20, textvariable=iname, font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['menu text']
-		)
-		iname_input.place(relx=0.7, rely=0.2)
-		iname_input.focus()
-
-		
-		iqty_label=Label(
-			window, text='New Item Quantity', font=(common.fonts['common text'], 10, 'normal'), 
-			fg=common.colors['menu text']
-		)
-		iqty_label.place(relx=0.45, rely=0.35)
-
-		iqty=StringVar()
-
-		iqty_input=Entry(
-			window, width=20, textvariable=iqty, font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['menu text']
-		)
-		iqty_input.place(relx=0.7, rely=0.35)
-
-		iprice_label=Label(
-			window, text='New Item Price (N)', font=(common.fonts['common text'], 10, 'normal'), 
-			fg=common.colors['menu text']
-		)
-		iprice_label.place(relx=0.45, rely=0.5)
-
-		iprice=StringVar()
-
-		iprice_input=Entry(
-			window, width=20, textvariable=iprice, font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['menu text']
-		)
-		iprice_input.place(relx=0.7, rely=0.5)
+	window=Toplevel(master_master)
+	window.title(user_bname+' Inventory')
+	window.geometry('520x320+420+150')
+	window.resizable(0,0)
 
 
-		edit_item=Button(
-			window, text='Save', 
-			command=lambda: confirmEditItem(window, master, master_master, inventory_frame, user_uname, old_iname.get(), iname, iqty, iprice), 
-			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-			font=(common.fonts['common text'], 10, 'normal'), width=8
-		)
-		edit_item.place(relx=0.25, rely=0.75)
+	title=Message(
+		window, text=('Hello, %s %s!' % (user_details_str[0], user_details_str[1])), width=300, 
+		font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
+		fg=common.colors['menu text']
+	)
+	title.place(relx=0.35, rely=0.03)
 
-		close=Button(
-			window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
-			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-			font=(common.fonts['common text'], 10, 'normal'), width=8
-		)
-		close.place(relx=0.5, rely=0.75)
-
-		window.focus_force()
-		window.grab_set()
-		window.transient(master)
-
-		window.protocol('WM_DELETE_WINDOW', lambda: ops.closeToplevel(window, master, master_master, True))
-		master.protocol('WM_DELETE_WINDOW', common.__ignore)
-
-		window.mainloop()
-	else:
-		ops.openAlert(master, master_master, 'You have no inventory items to edit! Maybe add a few?', 'Okay')
+	subtitle=Message(
+		window, text='*Type in new values for any account details you want to change (ignore the rest)', width=450, 
+		font=(common.fonts['common text'], 9, 'normal'), justify=CENTER, 
+		fg=common.colors['menu text']
+	)
+	subtitle.place(relx=0.07, rely=0.15)
 
 
-def confirmEditItem(add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):
+	new_fname_label=Label(
+		window, text='*New First Name', font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	new_fname_label.place(relx=0.06, rely=0.3)
+
+	new_fname=StringVar()
+
+	new_fname_input=Entry(
+		window, width=24, textvariable=new_fname, font=(common.fonts['common text'], 10, 'normal'),
+		fg=common.colors['menu text']
+	)
+	new_fname_input.place(relx=0.3, rely=0.3)
+	new_fname_input.focus()
+
+	old_fname_label=Label(
+		window, text=("(Currently '%s')" % user_details_str[0]), font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	old_fname_label.place(relx=0.65, rely=0.3)
+
+
+	new_lname_label=Label(
+		window, text='*New Last Name', font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	new_lname_label.place(relx=0.06, rely=0.4)
+
+	new_lname=StringVar()
+
+	new_lname_input=Entry(
+		window, width=24, textvariable=new_lname, font=(common.fonts['common text'], 10, 'normal'),
+		fg=common.colors['menu text']
+	)
+	new_lname_input.place(relx=0.3, rely=0.4)
+	new_lname_input.focus()
+
+	old_lname_label=Label(
+		window, text=("(Currently '%s')" % user_details_str[1]), font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	old_lname_label.place(relx=0.65, rely=0.4)
+
+
+	new_bname_label=Label(
+		window, text='*New Business Name', font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	new_bname_label.place(relx=0.06, rely=0.5)
+
+	new_bname=StringVar()
+
+	new_bname_input=Entry(
+		window, width=24, textvariable=new_bname, font=(common.fonts['common text'], 10, 'normal'),
+		fg=common.colors['menu text']
+	)
+	new_bname_input.place(relx=0.3, rely=0.5)
+	new_bname_input.focus()
+
+	old_bname_label=Label(
+		window, text=("(Currently '%s')" % user_details_str[2]), font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	old_bname_label.place(relx=0.65, rely=0.5)
+
+
+	new_uname_label=Label(
+		window, text='*New Username', font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	new_uname_label.place(relx=0.06, rely=0.6)
+
+	new_uname=StringVar()
+
+	new_uname_input=Entry(
+		window, width=24, textvariable=new_uname, font=(common.fonts['common text'], 10, 'normal'),
+		fg=common.colors['menu text']
+	)
+	new_uname_input.place(relx=0.3, rely=0.6)
+	new_uname_input.focus()
+
+	old_uname_label=Label(
+		window, text=("(Currently '%s')" % user_details_str[3]), font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	old_uname_label.place(relx=0.65, rely=0.6)
+
+
+	new_pword_label=Label(
+		window, text='*New Password', font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	new_pword_label.place(relx=0.06, rely=0.7)
+
+	new_pword=StringVar()
+
+	new_pword_input=Entry(
+		window, width=24, textvariable=new_pword, font=(common.fonts['common text'], 10, 'normal'),
+		fg=common.colors['menu text'], show="*"
+	)
+	new_pword_input.place(relx=0.3, rely=0.7)
+	new_pword_input.focus()
+
+	old_pword_label=Label(
+		window, text=("(Currently '%s')" % user_details_str[4]), font=(common.fonts['common text'], 10, 'normal'), 
+		fg=common.colors['menu text']
+	)
+	old_pword_label.place(relx=0.65, rely=0.7)
+
+
+	edit_item=Button(
+		window, text='Save', 
+		command=lambda: confirmEditAccount(window, master, master_master, user_uname, new_fname, new_lname, new_bname, new_uname, new_pword), 
+		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+		font=(common.fonts['common text'], 10, 'normal'), width=8
+	)
+	edit_item.place(relx=0.3, rely=0.85)
+
+	close=Button(
+		window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
+		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+		font=(common.fonts['common text'], 10, 'normal'), width=8
+	)
+	close.place(relx=0.55, rely=0.85)
+
+	window.focus_force()
+	window.grab_set()
+	window.transient(master)
+
+	window.protocol('WM_DELETE_WINDOW', lambda: ops.closeToplevel(window, master, master_master, True))
+	master.protocol('WM_DELETE_WINDOW', common.__ignore)
+
+	window.mainloop()
+
+
+def confirmEditAccount(add_window, master, master_master, user_uname, new_fname, new_lname, new_bname, new_uname, new_pword):
 	p1=user_uname
-	p2=old_iname
-	p3=iname.get()
-	p4=iqty.get()
-	p5=iprice.get()
+	p2=new_fname.get()
+	p3=new_lname.get()
+	p4=new_bname.get()
+	p5=new_uname.get()
+	p6=new_pword.get()
 
-	for p in (p3, p4, p5):
-		if(p==''):
-			ops.xopenAlert(add_window, master, master_master, 'Please fill everything out!', 'Okay')
 
-	match_q=re.search(r'^\d+$', p4)
-	match_p=re.search(r'^\d+$', p5)
+	match_a=re.search(r'^[a-zA-Z]+$', p2.lower())
+	match_b=re.search(r'^[a-zA-Z]+$', p3.lower())
 
-	if(not match_q):
-		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Got it')
-	elif(not match_p):
-		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Got it')
+	if(p2!='' and not match_a):
+		ops.xopenAlert(add_window, master, master_master, 'Names are made of letters!', 'Okay')
+	elif(p3!='' and not match_b):
+		ops.xopenAlert(add_window, master, master_master, 'Names are made of letters!', 'Okay')
+	elif(p2=='' and p3=='' and p4=='' and p5=='' and p6==''):
+		ops.xopenAlert(add_window, master, master_master, 'You haven\'t entered anything!', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
-		confirm_window.geometry('400x100+500+300')
+		confirm_window.geometry('430x140+480+250')
 		confirm_window.resizable(0,0)
 
 
 		msg=Message(
-			confirm_window, text='Are you sure about your entries?', 
+			confirm_window, text='Are you sure about your changes?', 
 			font=(common.fonts['common text'], 11, 'normal'), 
 			justify=CENTER, fg=common.colors['menu text'], width=300
 		)
 		msg.place(relx=0.5, rely=0.1, anchor=N)
 
+		msg2=Message(
+			confirm_window, text='You will have to log in again to view changes', 
+			font=(common.fonts['common text'], 9, 'normal'), 
+			justify=CENTER, fg=common.colors['header text'], width=300
+		)
+		msg2.place(relx=0.5, rely=0.3, anchor=N)
+
 		yep=Button(
-			confirm_window, text='Yes! Save My Edits!', 
-			command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, p3, p4, p5), 
+			confirm_window, text='Yes! I\'m Sure!', 
+			command=lambda: editAccount(confirm_window, add_window, master, master_master, p1, p2, p3, p4, p5, p6), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
-		yep.place(relx=0.3, rely=0.7, anchor=CENTER)
+		yep.place(relx=0.3, rely=0.75, anchor=CENTER)
 
 		nope=Button(
 			confirm_window, text='No! Take Me Back!', 
@@ -179,7 +240,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, user_una
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
-		nope.place(relx=0.7, rely=0.7, anchor=CENTER)
+		nope.place(relx=0.7, rely=0.75, anchor=CENTER)
 
 		confirm_window.focus_force()
 		confirm_window.grab_set()
@@ -192,22 +253,54 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, user_una
 		confirm_window.mainloop()
 
 
-def editItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):
+def editAccount(confirm_window, add_window, master, master_master, user_uname, new_fname, new_lname, new_bname, new_uname, new_pword):
 	db=sql.connect(
-		host='localhost', user='root', passwd='#rossql13', db='open_inventory_desktop'
+		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
 
 	query=db.cursor()
 
-	cmd=query.execute(
-		"""UPDATE %s_items SET item_name='%s', quantity=%d, price=%f WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname, int(iqty), float(iprice), old_iname)
-	)
+	if(new_fname!=''):
+		cmd=query.execute(
+			"""UPDATE user_accounts SET `fname`='%s' WHERE BINARY `uname`='%s'""" % (new_fname, user_uname)
+		)
 
-	save=query.execute("""COMMIT""")
+		save=query.execute("""COMMIT""")
 
-	ops.populateInventory(user_uname, inventory_frame)
+	if(new_lname!=''):
+		cmd=query.execute(
+			"""UPDATE user_accounts SET `lname`='%s' WHERE BINARY `uname`='%s'""" % (new_lname, user_uname)
+		)
+
+		save=query.execute("""COMMIT""")
+
+	if(new_bname!=''):
+		cmd=query.execute(
+			"""UPDATE user_accounts SET `bname`='%s' WHERE BINARY `uname`='%s'""" % (new_bname, user_uname)
+		)
+
+		save=query.execute("""COMMIT""")
+
+	if(new_pword!=''):
+		cmd=query.execute(
+			"""UPDATE user_accounts SET `pword`='%s' WHERE BINARY `uname`='%s'""" % (new_pword, user_uname)
+		)
+
+		save=query.execute("""COMMIT""")
+
+	if(new_uname!=''):
+		cmd=query.execute(
+			"""UPDATE user_accounts SET `uname`='%s' WHERE BINARY `uname`='%s'""" % (new_uname, user_uname)
+		)
+
+		save=query.execute("""COMMIT""")
+
+		cmd2=query.execute(
+			"""RENAME TABLE %s_items TO %s_items, %s_sales TO %s_sales""" % (user_uname.lower(), new_uname.lower(), user_uname.lower(), new_uname.lower())
+		)
+
+		save2=query.execute("""COMMIT""")
+
+
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
-
-'''
-import re

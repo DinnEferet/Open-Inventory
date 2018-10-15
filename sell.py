@@ -102,7 +102,7 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no items to sell! \nMaybe add a few?', 'Okay')
+		ops.openAlert(master, master_master, 'You have no items to sell! \nMaybe add a few?', 'Okay', True)
 
 
 def confirmSellItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty):

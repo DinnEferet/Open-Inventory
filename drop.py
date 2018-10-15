@@ -74,7 +74,7 @@ def openDropItem(master, master_master, inventory_frame, user_uname, user_bname)
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no items to delete!', 'Okay')
+		ops.openAlert(master, master_master, 'You have no items to delete!', 'Okay', True)
 
 
 def confirmDropItem(add_window, master, master_master, inventory_frame, user_uname, iname):
