@@ -1,7 +1,7 @@
 # Open-Inventory &copy;
 
 ### Version: 
-1.1
+1.0
 
 ### Designation:
 Open-source
@@ -16,7 +16,7 @@ Open Inventory is a simple, python-based, open-source inventory management syste
 * Python (user interface, programming logic, business rules)
 * MySQL (database functionalities)
 
-### Python Modules:
+### Modules/Extensions:
 * Tkinter, Pmw (GUI design)
 * webbrowser (link to GitHub)
 * re (regular expressions)
