@@ -14,7 +14,7 @@ import ops
 def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
-	window.geometry('400x250+450+200')
+	window.geometry('400x300+450+180')
 	window.resizable(0,0)
 
 	title=Message(
@@ -28,7 +28,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, text='Item Name', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	iname_label.place(relx=0.1, rely=0.15)
+	iname_label.place(relx=0.1, rely=0.16)
 
 	iname=StringVar()
 
@@ -36,7 +36,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, width=20, textvariable=iname, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text']
 	)
-	iname_input.place(relx=0.4, rely=0.15)
+	iname_input.place(relx=0.4, rely=0.16)
 	iname_input.focus()
 
 	
@@ -44,7 +44,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, text='Item Quantity', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	iqty_label.place(relx=0.1, rely=0.3)
+	iqty_label.place(relx=0.1, rely=0.28)
 
 	iqty=StringVar()
 
@@ -52,13 +52,13 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, width=20, textvariable=iqty, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text']
 	)
-	iqty_input.place(relx=0.4, rely=0.3)
+	iqty_input.place(relx=0.4, rely=0.28)
 
 	iprice_label=Label(
 		window, text='Item Price (N)', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	iprice_label.place(relx=0.1, rely=0.45)
+	iprice_label.place(relx=0.1, rely=0.4)
 
 	iprice=StringVar()
 
@@ -66,21 +66,34 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 		window, width=20, textvariable=iprice, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text']
 	)
-	iprice_input.place(relx=0.4, rely=0.45)
+	iprice_input.place(relx=0.4, rely=0.4)
 
+
+	ibarcode=StringVar()
+
+	ibarcode_input=Frame(
+		window, width=100, height=50, borderwidth=2, bg=common.colors['inventory'], relief=SUNKEN
+	)
+	ibarcode_input.place(relx=0.45, rely=0.52)
 
 	scan_bc=Button(
-		window, text='Scan Barcode', 
-		command=lambda: ignore(), 
+		window, text='Scan Item Barcode',
+		command=lambda: scanBarcode(inventory_frame, ibarcode_input, ibarcode), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-		font=(common.fonts['common text'], 10, 'normal'), width=13
+		font=(common.fonts['common text'], 10, 'normal'), width=15
 	)
-	scan_bc.place(relx=0.39, rely=0.6)
+	scan_bc.place(relx=0.1, rely=0.55)
+
+	Message( #message if user has no items in inventory 
+		window, text='** Optional **', width=100,
+		font=(common.fonts['common text'], 8, 'normal'), justify=CENTER, 
+		fg=common.colors['menu text'],
+	).place(relx=0.14, rely=0.64)
 
 
 	add_item=Button(
-		window, text='Add Item', 
-		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice), 
+		window, text='Add Item',
+		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice, ibarcode), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=9
 	)
@@ -103,7 +116,12 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 	window.mainloop()
 
 
-def confirmAddItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice):
+def scanBarcode(inventory_frame, ibarcode_input, ibarcode):
+	#test
+	print ("COW")
+
+
+def confirmAddItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice, ibarcode):
 	p1=user_uname
 	p2=iname.get()
 	p3=iqty.get()
@@ -136,7 +154,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, user_unam
 
 		yep=Button(
 			confirm_window, text='Yes! Add My Item!', 
-			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, p3, p4), 
+			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, p3, p4, ibarcode), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -161,16 +179,24 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, user_unam
 		confirm_window.mainloop()
 
 
-def addItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice):
+def addItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice, ibarcode):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
 
 	query=db.cursor()
 
-	cmd=query.execute(
-		"""INSERT INTO %s_items VALUES ('%s', %d, %f)""" % (user_uname.lower(), iname, int(iqty), float(iprice))
-	)
+	bc=ibarcode.get()
+
+	if(bc==''):
+		cmd=query.execute(
+			"""INSERT INTO %s_items VALUES ('%s', %d, %f, '')""" % (user_uname.lower(), iname, int(iqty), float(iprice))
+		)
+	else:
+		cmd=query.execute(
+			"""INSERT INTO %s_items VALUES ('%s', %d, %f, '%s')""" % (user_uname.lower(), iname, int(iqty), float(iprice), bc)
+		)
+
 
 	save=query.execute("""COMMIT""")
 

@@ -99,7 +99,7 @@ class MyInventory:
 
 		Button( #edit existing item button
 			self.button_frame, text='Edit Item',
-			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, user_uname, user_bname, None),
+			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, user_uname, user_bname),
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.2, rely=0.4)
