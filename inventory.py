@@ -61,7 +61,7 @@ class MyInventory:
 		self.menu_frame.tk_menuBar(self.extras) #binds menu frame to menu button
 
 
-		common.Header(self.master, user_bname+' Inventory')
+		common.Header(self.master, user_bname)
 		
 		self.button_frame=Frame( #container frame for user inventory options
 			self.master, width=200, height=300, borderwidth=2, relief=SUNKEN, bg=common.colors['outer']
