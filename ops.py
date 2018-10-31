@@ -204,7 +204,7 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 		about_window, text='Version 1.0'
 		'\n\n\nCopyright '+u'\N{COPYRIGHT SIGN}'.encode('utf-8')+' 2018 Dinn Eferet. All rights reserved.'
 		'\n\nGNU General Public License v3.0.'
-		'\n\n\nOnline Repository:', 
+		'\n\n\nGitHub Repository:', 
 		font=(common.fonts['common text'], 10, 'normal'), width=400, justify=CENTER, 
 		fg=common.colors['menu text']
 	)

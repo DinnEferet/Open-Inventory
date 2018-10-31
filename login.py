@@ -100,6 +100,6 @@ def login(master, master_master, uname, pwd):
 		data=query.fetchall()
 
 		master.destroy()
-		ops.openInventory(master_master, (data[0])[2], (data[0])[4])
+		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
 	else:
 		ops.openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Okay', False)

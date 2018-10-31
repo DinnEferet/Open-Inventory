@@ -27,18 +27,18 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 	if(inventory_has_items>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
-		window.geometry('500x200+450+220')
+		window.geometry('500x200+420+220')
 		window.resizable(0,0)
 
 		title=Message(
-			window, text='Make A Sale', width=200, 
+			window, text='Make Sale', width=200, 
 			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text']
 		)
 		title.place(relx=0.5, rely=0.03, anchor=N)
 		
 		iname_label=Label(
-			window, text='Select Item', font=(common.fonts['common text'], 10, 'normal'), 
+			window, text='Select item (or type item name)', font=(common.fonts['common text'], 10, 'normal'), 
 			fg=common.colors['menu text']
 		)
 		iname_label.place(relx=0.05, rely=0.2)
@@ -49,10 +49,10 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 			item_list+=(str(inventory_item[0]),)
 
 		iname=Pmw.ComboBox(
-			window, listbox_width=9, dropdown=1, scrolledlist_items=item_list,
+			window, listbox_width=20, dropdown=1, scrolledlist_items=item_list,
 			listheight=100, fliparrow=True
 		)
-		iname.place(relx=0.05, rely=0.3)
+		iname.place(relx=0.05, rely=0.33)
 		iname.selectitem(item_list[0])
 
 		
@@ -78,20 +78,20 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 		xiqty_label.place(relx=0.85, rely=0.35)
 
 
-		add_item=Button(
+		sell_item=Button(
 			window, text='Sell Item', 
 			command=lambda: confirmSellItem(window, master, master_master, inventory_frame, user_uname, iname.get(), iqty), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=8
 		)
-		add_item.place(relx=0.5, rely=0.5)
+		sell_item.place(relx=0.5, rely=0.55)
 
 		close=Button(
 			window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=8
 		)
-		close.place(relx=0.7, rely=0.5)
+		close.place(relx=0.7, rely=0.55)
 
 		window.focus_force()
 		window.grab_set()
@@ -133,17 +133,27 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 
 	stored_iqty=(item[0])[0]
 
-	if(int(p3)>int(stored_iqty)):
+	if(int(stored_iqty)==0):
+		ops.xopenAlert(add_window, master, master_master, 'You have no units of this item in stock!', 'Okay')
+	elif(int(p3)>int(stored_iqty)):
 		ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
-		confirm_window.geometry('400x100+500+300')
+		confirm_window.geometry('400x130+470+270')
 		confirm_window.resizable(0,0)
 
 
+		get_price=query.execute(
+			"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+		)
+		price=query.fetchall()
+
+		amount_due=round((float((price[0])[0])*float(p3)), 2)
+
+
 		msg=Message(
-			confirm_window, text='Confirm Item Sale?', 
+			confirm_window, text='Amount Due: N%s\n\nConfirm Sale?' % (amount_due), 
 			font=(common.fonts['common text'], 11, 'normal'), 
 			justify=CENTER, fg=common.colors['menu text'], width=300
 		)
@@ -151,11 +161,11 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 
 		yep=Button(
 			confirm_window, text='Yes! Sell This Item!', 
-			command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, int(stored_iqty-int(p3))), 
+			command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, int(stored_iqty), int(p3)), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
-		yep.place(relx=0.3, rely=0.7, anchor=CENTER)
+		yep.place(relx=0.3, rely=0.75, anchor=CENTER)
 
 		nope=Button(
 			confirm_window, text='No! Take Me Back!', 
@@ -163,7 +173,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
-		nope.place(relx=0.7, rely=0.7, anchor=CENTER)
+		nope.place(relx=0.7, rely=0.75, anchor=CENTER)
 
 		confirm_window.focus_force()
 		confirm_window.grab_set()
@@ -176,21 +186,29 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 		confirm_window.mainloop()
 
 
-def sellItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, new_iqty):
+def sellItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, stored_iqty, sold_iqty):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
 
 	query=db.cursor()
 
-	sell_item=query.execute(
-		"""UPDATE %s_items SET quantity=%d WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), int(new_iqty), iname)
+
+	get_price=query.execute(
+		"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+	)
+	price=query.fetchall()
+
+	amount_due=round((float((price[0])[0])*float(sold_iqty)), 2)
+
+
+	record_sale=query.execute(
+		"""INSERT INTO %s_sales VALUES ('%s', %d, %f, '%s')""" % (user_uname.lower(), iname, sold_iqty, amount_due, date.datetime.now().strftime('%Y/%m/%d'))
 	)
 
-	if(int(new_iqty)==0):
-		remove_item=query.execute(
-			"""DELETE FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
-		)
+	sell_item=query.execute(
+		"""UPDATE %s_items SET quantity=%d WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), (int(stored_iqty)-int(sold_iqty)), iname)
+	)
 
 
 	save=query.execute("""COMMIT""")

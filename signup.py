@@ -15,46 +15,15 @@ import ops
 def openNewProfile(pmaster):
 	newprofile_window=Toplevel(pmaster)
 	newprofile_window.title('New Business Profile')
-	newprofile_window.geometry('500x300+450+200')
+	newprofile_window.geometry('500x250+450+200')
 	newprofile_window.resizable(0,0)
-
-	
-	fname_label=Label(
-		newprofile_window, text='First Name:', font=(common.fonts['common text'], 11, 'normal'), 
-		fg=common.colors['menu text']
-	)
-	fname_label.place(relx=0.12, rely=0.05)
-
-	fname=StringVar()
-
-	fname_input=Entry(
-		newprofile_window, width=25, textvariable=fname, font=(common.fonts['common text'], 11, 'normal'),
-		fg=common.colors['menu text']
-	)
-	fname_input.place(relx=0.4, rely=0.05)
-	fname_input.focus()
-
-
-	lname_label=Label(
-		newprofile_window, text='Last Name:', font=(common.fonts['common text'], 11, 'normal'), 
-		fg=common.colors['menu text']
-	)
-	lname_label.place(relx=0.12, rely=0.15)
-
-	lname=StringVar()
-
-	lname_input=Entry(
-		newprofile_window, width=25, textvariable=lname, font=(common.fonts['common text'], 11, 'normal'),
-		fg=common.colors['menu text']
-	)
-	lname_input.place(relx=0.4, rely=0.15)
 
 
 	bname_label=Label(
 		newprofile_window, text='Business Name:', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	bname_label.place(relx=0.12, rely=0.25)
+	bname_label.place(relx=0.12, rely=0.1)
 
 	bname=StringVar()
 
@@ -62,14 +31,14 @@ def openNewProfile(pmaster):
 		newprofile_window, width=25, textvariable=bname, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text']
 	)
-	bname_input.place(relx=0.4, rely=0.25)
+	bname_input.place(relx=0.4, rely=0.1)
 
 
 	uname_label=Label(
 		newprofile_window, text='Username:', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	uname_label.place(relx=0.12, rely=0.35)
+	uname_label.place(relx=0.12, rely=0.25)
 
 	uname=StringVar()
 
@@ -77,14 +46,14 @@ def openNewProfile(pmaster):
 		newprofile_window, width=25, textvariable=uname, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text']
 	)
-	uname_input.place(relx=0.4, rely=0.35)
+	uname_input.place(relx=0.4, rely=0.25)
 
 
 	pwd_label=Label(
 		newprofile_window, text='Password:', font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
-	pwd_label.place(relx=0.12, rely=0.45)
+	pwd_label.place(relx=0.12, rely=0.4)
 
 	pwd=StringVar()
 
@@ -92,7 +61,7 @@ def openNewProfile(pmaster):
 		newprofile_window, width=25, textvariable=pwd, font=(common.fonts['common text'], 11, 'normal'),
 		fg=common.colors['menu text'], show="*"
 	)
-	pwd_input.place(relx=0.4, rely=0.45)
+	pwd_input.place(relx=0.4, rely=0.4)
 
 
 	cpwd_label=Label(
@@ -112,7 +81,7 @@ def openNewProfile(pmaster):
 
 	profile_btn=Button(
 		newprofile_window, text='Create Profile', 
-		command=lambda: confirm_signup(newprofile_window, pmaster, fname, lname, bname, uname, pwd, cpwd), 
+		command=lambda: confirm_signup(newprofile_window, pmaster, bname, uname, pwd, cpwd), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=12
 	)
@@ -136,19 +105,17 @@ def openNewProfile(pmaster):
 	newprofile_window.mainloop()
 
 
-def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd):
-	p1=fname.get()
-	p2=lname.get()
-	p3=bname.get()
-	p4=uname.get()
-	p5=pwd.get()
-	p6=cpwd.get()
+def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
+	p1=bname.get()
+	p2=uname.get()
+	p3=pwd.get()
+	p4=cpwd.get()
 
-	for p in (p1,p2,p3,p4,p5,p6):
+	for p in (p1,p2,p3,p4):
 		if(p==''):
 			ops.openAlert(master, master_master, 'Please fill everything out!', 'Okay', False)
 
-	if(p5!=p6):
+	if(p3!=p4):
 		ops.openAlert(master, master_master, 'Passwords must match!\nTry again!', 'Okay', False)
 
 	db=sql.connect(
@@ -158,11 +125,11 @@ def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd)
 	query=db.cursor()
 
 	used_uname=query.execute(
-		"""SELECT * FROM user_accounts WHERE BINARY `uname`='%s'""" % (p4)
+		"""SELECT * FROM user_accounts WHERE BINARY `uname`='%s'""" % (p2)
 	)
 
 	if(used_uname>0):
-		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another', 'Okay', False)
+		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another.', 'Okay', False)
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
@@ -178,7 +145,7 @@ def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd)
 
 		yep=Button(
 			confirm_window, text='Yes! Sign Me Up!', 
-			command=lambda: signup(confirm_window, master, master_master, fname, lname, bname, uname, pwd, cpwd), 
+			command=lambda: signup(confirm_window, master, master_master, p1, p2, p3), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -202,15 +169,8 @@ def confirm_signup(master, master_master, fname, lname, bname, uname, pwd, cpwd)
 		confirm_window.mainloop()
 
 
-def signup(confirm_window, master, master_master, fname, lname, bname, uname, pwd, cpwd):
+def signup(confirm_window, master, master_master, bname, uname, pwd):
 	ops.closeToplevel(confirm_window, master, master_master, False)
-
-	p1=fname.get()
-	p2=lname.get()
-	p3=bname.get()
-	p4=uname.get()
-	p5=pwd.get()
-	p6=cpwd.get()
 
 
 	db=sql.connect(
@@ -221,7 +181,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 
 	
 	new_profile=query.execute(
-		"""INSERT INTO user_accounts VALUES ('%s', '%s', '%s', '%s', '%s', '%s')""" % (p1, p2, p4, p5, p3, date.datetime.now().strftime('%Y/%m/%d'))
+		"""INSERT INTO user_accounts VALUES ('%s', '%s', '%s', '%s')""" % (bname, uname, pwd, date.datetime.now().strftime('%Y/%m/%d'))
 	)
 
 	save_transactions=query.execute(
@@ -229,7 +189,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 	)
 
 	item_table=query.execute(
-		"""CREATE TABLE IF NOT EXISTS `%s_items` (`item_name` varchar(33) PRIMARY KEY UNIQUE NOT NULL, `quantity` integer, `price` float, `barcode` varchar(13))""" % (p4.lower())
+		"""CREATE TABLE IF NOT EXISTS `%s_items` (`item_name` varchar(33) PRIMARY KEY UNIQUE NOT NULL, `quantity` integer, `price` float)""" % (uname.lower())
 	)
 
 	save_transactions=query.execute(
@@ -237,7 +197,7 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 	)
 
 	sales_table=query.execute(
-		"""CREATE TABLE IF NOT EXISTS `%s_sales` (`item_name` varchar(33) PRIMARY KEY UNIQUE NOT NULL, `quantity_bought` integer, `amount_paid` float, `date_of_sale` date)""" % (p4.lower())
+		"""CREATE TABLE IF NOT EXISTS `%s_sales` (`item_name` varchar(33) NOT NULL, `quantity_bought` integer, `amount_paid` float, `date_of_sale` date)""" % (uname.lower())
 	)
 
 	save_transactions=query.execute(
@@ -245,11 +205,11 @@ def signup(confirm_window, master, master_master, fname, lname, bname, uname, pw
 	)
 	
 	get_new_profile=query.execute(
-		"""SELECT * FROM user_accounts WHERE BINARY `pword`='%s' AND BINARY `uname`='%s'""" % (p5, p4)
+		"""SELECT * FROM user_accounts WHERE BINARY `pword`='%s' AND BINARY `uname`='%s'""" % (pwd, uname)
 	)
 
 	if(get_new_profile>0):
 		data=query.fetchall()
 
 		master.destroy()
-		ops.openInventory(master_master, (data[0])[2], (data[0])[4])
+		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
