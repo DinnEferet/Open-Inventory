@@ -24,7 +24,7 @@ import signup
 class Home:
 	def __init__(self, master=None):
 		self.master=master
-		self.master.title('Open Inventory 1.0')
+		self.master.title('Open Inventory')
 		self.master.geometry('800x500+300+100')
 		self.master.resizable(0,0)
 
@@ -61,7 +61,7 @@ class Home:
 		
 		self.menu_frame.tk_menuBar(self.extras) #creates frame container for menu
 
-		common.Header(self.master_frame, 'Open Inventory 1.0') #calls instance of window header class
+		common.Header(self.master_frame, 'Open Inventory') #calls instance of window header class
 
 
 		self.button_frame=Frame( #frame for some buttons

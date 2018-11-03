@@ -9,6 +9,10 @@ import MySQLdb as sql #module for MySQL database connections
 import datetime as date #module for date
 import common #python file with useful specifications
 import inventory
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+
 
 #inventory population method
 def populateInventory(user_uname, inventory_frame):
@@ -74,7 +78,6 @@ def populateInventory(user_uname, inventory_frame):
 			fg=common.colors['menu text'],
 			bg=common.colors['inventory']
 		).place(relx=0.2, rely=0.24)
-
 
 def searchInventory(master, master_master, user_uname, inventory_frame, srch_item):
 
@@ -177,11 +180,9 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 
 			alert_window.mainloop()
 
-
 #Inventory window instaniation method
 def openInventory(imaster, user_uname, user_bname):
 	inv=inventory.MyInventory(imaster, user_uname, user_bname)
-
 
 #about Open Inventory window method
 def openAbout(abtmaster, abtmaster_master, master_is_inventory):
@@ -236,7 +237,6 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 
 	about_window.mainloop()
 
-
 #toplevel window closing method
 def closeToplevel(victim, vmaster, vmaster_master, vmaster_is_inventory):
 	if(vmaster_is_inventory==True):
@@ -250,14 +250,12 @@ def closeToplevel(victim, vmaster, vmaster_master, vmaster_is_inventory):
 	victim.grab_release()
 	victim.destroy()
 
-
 def xcloseToplevel(victim, vmaster, vmaster_master, vmaster_master_master):
 	victim.grab_release()
 
 	vmaster.protocol('WM_DELETE_WINDOW', lambda: closeToplevel(vmaster, vmaster_master, vmaster_master_master, True))
 	
 	victim.destroy()
-
 
 #alert message window method; opens aller with speficied message
 def openAlert(master, master_master, message, leave, master_is_inventory):
@@ -289,8 +287,7 @@ def openAlert(master, master_master, message, leave, master_is_inventory):
 
 	alert_window.mainloop()
 
-
-#hacks; ensure that toplevel windows one level above the login/sign-up alerts behave properly 
+#hack; ensures that toplevel windows one level above the login/sign-up alerts behave properly 
 def xopenAlert(add_window, master, master_master, message, leave):
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
@@ -321,14 +318,45 @@ def xopenAlert(add_window, master, master_master, message, leave):
 
 	alert_window.mainloop()
 
-
 #hack; restores default closing behavior of Inventory window
 def restoreInventoryDefaultClose(victim, vmaster):
 	closeToplevel(victim, vmaster, None, False)
 	vmaster.geometry('800x500+300+100')
 	vmaster.deiconify()
 
-
 #method for opening GitHub for Open Inventoy 1.0
 def toGitHub(event):
 	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory") #opens Open Inventory GitHub repository in user's browser
+
+def showStats(master, user_uname):
+	db=sql.connect(
+		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
+	)
+
+	query=db.cursor() #creates cursor for query
+
+	inventory_sales=query.execute( #gets all items in user inventory in alphabetical order
+		"""SELECT * FROM %s_sales ORDER BY item_name ASC""" % (user_uname.lower())
+	)
+	sales=query.fetchall() #gets rows from table
+
+	if(inventory_sales>0):
+		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
+			master, hull_width=196, hull_height=310, usehullsize=1, borderframe=1,
+			vscrollmode='dynamic', hscrollmode='none'
+		)
+
+		data_container=data_pane.interior() #initializes interior of canvas
+
+		data_container.configure(bg=common.colors['info sheet'])
+
+		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
+		data_pane.resizescrollregion()
+	else:
+		Message( #message if user has no items in inventory 
+			master, text='No stats yet.', width=100,
+			font=(common.fonts['common text'], 10, 'normal'), justify=CENTER, 
+			fg=common.colors['menu text'],
+			bg=common.colors['info sheet']
+		).place(relx=0.3, rely=0.2)
+

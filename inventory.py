@@ -21,8 +21,8 @@ class MyInventory:
 	def __init__(self, master, user_uname, user_bname):
 		master.withdraw()
 		self.master=Toplevel(master)
-		self.master.title('Open Inventory 1.0')
-		self.master.geometry('900x600+200+50')
+		self.master.title('Open Inventory')
+		self.master.geometry('1000x600+180+50')
 		self.master.resizable(0,0)
 
 		self.menu_frame=Frame( #container frame
@@ -61,19 +61,19 @@ class MyInventory:
 		self.menu_frame.tk_menuBar(self.extras) #binds menu frame to menu button
 
 
-		common.Header(self.master, user_bname)
+		common.Header(self.master, user_bname+" Inventory")
 		
 		self.button_frame=Frame( #container frame for user inventory options
-			self.master, width=200, height=300, borderwidth=2, relief=SUNKEN, bg=common.colors['outer']
+			self.master, width=180, height=300, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 		)
-		self.button_frame.place(relx=0.01, rely=0.15) #positions container frame
+		self.button_frame.place(relx=0.02, rely=0.15) #positions container frame
 
 
 		self.inventory_frame=Frame( #container frame for user inventory items
-			self.master, width=520, height=300, borderwidth=2, relief=SUNKEN, 
+			self.master, width=520, height=300, borderwidth=2, relief=GROOVE, 
 			bg=common.colors['inventory']
 		)
-		self.inventory_frame.place(relx=0.3, rely=0.15)
+		self.inventory_frame.place(relx=0.23, rely=0.15)
 
 
 		self.columns_frame=Frame( #container frame for user inventory heading
@@ -143,7 +143,7 @@ class MyInventory:
 		self.srch_frame=Frame(
 			self.master, width=480, height=30
 		)
-		self.srch_frame.place(relx=0.32, rely=0.68)
+		self.srch_frame.place(relx=0.27, rely=0.68)
 
 		self.srch=StringVar()
 
@@ -165,6 +165,37 @@ class MyInventory:
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=11
 		).place(relx=0.72, rely=0)
+
+
+		self.stats_frame=Frame( #statistics frame for inventory
+			self.master, width=200, height=380, borderwidth=2, relief=GROOVE, bg=common.colors['info sheet']
+		)
+		self.stats_frame.place(relx=0.77, rely=0.15) #positions statistics frame
+
+		self.stats_header=Frame( #statistics frame for inventory
+			self.stats_frame, width=196, height=30, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+		)
+		self.stats_header.place(relx=0, rely=0)
+
+		Label(
+			self.stats_header, text='Stats', font=(common.fonts['common text'], 11, 'bold'),
+			fg=common.colors['menu text'], bg=common.colors['outer']
+		).place(relx=0.4, rely=0.01)
+
+
+		ops.showStats(self.stats_frame, user_uname)
+
+
+		self.stats_footer=Frame( #statistics frame for inventory
+			self.stats_frame, width=196, height=37, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+		)
+		self.stats_footer.place(relx=0, rely=0.91)
+
+		Button( #logout button
+			self.stats_footer, text='Print Report', command=lambda: self.ignore(), 
+			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
+			font=(common.fonts['common text'], 10, 'normal'), width=12
+		).place(relx=0.25, rely=0.1)
 
 		common.Footer(self.master) 
 
