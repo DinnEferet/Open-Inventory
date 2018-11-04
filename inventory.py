@@ -64,7 +64,7 @@ class MyInventory:
 		common.Header(self.master, user_bname+" Inventory")
 		
 		self.button_frame=Frame( #container frame for user inventory options
-			self.master, width=180, height=300, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+			self.master, width=150, height=300, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 		)
 		self.button_frame.place(relx=0.02, rely=0.15) #positions container frame
 
@@ -73,7 +73,7 @@ class MyInventory:
 			self.master, width=520, height=300, borderwidth=2, relief=GROOVE, 
 			bg=common.colors['inventory']
 		)
-		self.inventory_frame.place(relx=0.23, rely=0.15)
+		self.inventory_frame.place(relx=0.18, rely=0.15)
 
 
 		self.columns_frame=Frame( #container frame for user inventory heading
@@ -82,40 +82,45 @@ class MyInventory:
 		)
 		self.columns_frame.place(relx=0.0, rely=0.0)
 
+		self.stats_frame=Frame( #statistics frame for inventory
+			self.master, width=260, height=380, borderwidth=2, relief=GROOVE, bg=common.colors['info sheet']
+		)
+		self.stats_frame.place(relx=0.715, rely=0.15) #positions statistics frame
+
 
 		Button( #sell item button
 			self.button_frame, text='Make Sale', 
-			command=lambda: sell.openSellItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
+			command=lambda: sell.openSellItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.2, rely=0.1)
+		).place(relx=0.15, rely=0.1)
 
 		Button( #add new item button
 			self.button_frame, text='Add Item', 
 			command=lambda: add.openAddItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.2, rely=0.25)
+		).place(relx=0.15, rely=0.25)
 
 		Button( #edit existing item button
 			self.button_frame, text='Edit Item',
 			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, user_uname, user_bname),
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.2, rely=0.4)
+		).place(relx=0.15, rely=0.4)
 
 		Button( #delete item button
 			self.button_frame, text='Delete Item', 
 			command=lambda: drop.openDropItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.2, rely=0.55)
+		).place(relx=0.15, rely=0.55)
 
 		Button( #logout button
 			self.button_frame, text='Logout', command=lambda: self.closeApp(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.2, rely=0.7)
+		).place(relx=0.15, rely=0.7)
 
 
 		Label( #title label for item name
@@ -143,7 +148,7 @@ class MyInventory:
 		self.srch_frame=Frame(
 			self.master, width=480, height=30
 		)
-		self.srch_frame.place(relx=0.27, rely=0.68)
+		self.srch_frame.place(relx=0.2, rely=0.68)
 
 		self.srch=StringVar()
 
@@ -167,13 +172,8 @@ class MyInventory:
 		).place(relx=0.72, rely=0)
 
 
-		self.stats_frame=Frame( #statistics frame for inventory
-			self.master, width=200, height=380, borderwidth=2, relief=GROOVE, bg=common.colors['info sheet']
-		)
-		self.stats_frame.place(relx=0.77, rely=0.15) #positions statistics frame
-
 		self.stats_header=Frame( #statistics frame for inventory
-			self.stats_frame, width=196, height=30, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+			self.stats_frame, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 		)
 		self.stats_header.place(relx=0, rely=0)
 
@@ -187,15 +187,15 @@ class MyInventory:
 
 
 		self.stats_footer=Frame( #statistics frame for inventory
-			self.stats_frame, width=196, height=37, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+			self.stats_frame, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 		)
 		self.stats_footer.place(relx=0, rely=0.91)
 
 		Button( #logout button
-			self.stats_footer, text='Print Report', command=lambda: self.ignore(), 
+			self.stats_footer, text='Print Stats', command=lambda: self.ignore(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=12
-		).place(relx=0.25, rely=0.1)
+		).place(relx=0.33, rely=0.1)
 
 		common.Footer(self.master) 
 

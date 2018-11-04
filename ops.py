@@ -10,8 +10,13 @@ import datetime as date #module for date
 import common #python file with useful specifications
 import inventory
 import pandas as pd 
-import numpy as np 
-import matplotlib.pyplot as plt 
+import numpy as np
+import matplotlib as mpl
+mpl.use('TkAgg')
+mpl.rcParams.update({'font.size': 6})
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from matplotlib.ticker import FormatStrFormatter
 
 
 #inventory population method
@@ -342,7 +347,7 @@ def showStats(master, user_uname):
 
 	if(inventory_sales>0):
 		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
-			master, hull_width=196, hull_height=310, usehullsize=1, borderframe=1,
+			master, hull_width=256, hull_height=310, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
@@ -350,8 +355,57 @@ def showStats(master, user_uname):
 
 		data_container.configure(bg=common.colors['info sheet'])
 
+		get_sale_dates=query.execute(
+			"""SELECT date_of_sale FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (user_uname.lower())
+		)
+		sale_dates=query.fetchall()
+
+		get_sale_counts=query.execute(
+			"""SELECT count(item_name) FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (user_uname.lower())
+		)
+		sale_counts=query.fetchall()
+
+		x_axis=[]
+		y_axis=[]
+
+		for sale in sale_dates:
+			for s in sale:
+				x_axis.append(str(s))
+
+		for sale in sale_counts:
+			for s in sale:
+				y_axis.append(int(s))
+
+		x=np.array(x_axis)
+		y=np.array(y_axis)
+
+
+		fig = Figure(figsize=(4, 2))
+		a = fig.add_subplot(221)
+
+		if(len(x)>1):
+			a.plot(x, y, color='red')
+		else:
+			a.scatter(x, y, color='red')
+
+
+		a.set_title ("This Week's Sales")
+		a.set_ylabel("Number of sales")
+		a.set_xlabel("Date")
+		a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
+		sales_frame=Frame( #frame for item row
+			data_container, width=248, height=150, borderwidth=0,
+			bg=common.colors['info sheet']
+		)
+		sales_frame.place(relx=0.01, rely=0.01)
+
+		canvas=FigureCanvasTkAgg(fig, master=sales_frame)
+		canvas.get_tk_widget().place(relx=0.06, rely=0.1)
+		canvas.draw()
+
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
-		data_pane.resizescrollregion()
+		data_pane.resizescrollregion()	
 	else:
 		Message( #message if user has no items in inventory 
 			master, text='No stats yet.', width=100,

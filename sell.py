@@ -11,7 +11,7 @@ import ops
 
 
 #inventory item sale methods
-def openSellItem(master, master_master, inventory_frame, user_uname, user_bname):
+def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	item_list=()
 
 	db=sql.connect(
@@ -80,7 +80,7 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 
 		sell_item=Button(
 			window, text='Sell Item', 
-			command=lambda: confirmSellItem(window, master, master_master, inventory_frame, user_uname, iname.get(), iqty), 
+			command=lambda: confirmSellItem(window, master, master_master, inventory_frame, stats_frame, user_uname, iname.get(), iqty), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=8
 		)
@@ -105,7 +105,7 @@ def openSellItem(master, master_master, inventory_frame, user_uname, user_bname)
 		ops.openAlert(master, master_master, 'You have no items to sell! \nMaybe add a few?', 'Okay', True)
 
 
-def confirmSellItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty):
+def confirmSellItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty):
 	p1=user_uname
 	p2=iname
 	p3=iqty.get()
@@ -161,7 +161,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 
 		yep=Button(
 			confirm_window, text='Yes! Sell This Item!', 
-			command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, int(stored_iqty), int(p3)), 
+			command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, p2, int(stored_iqty), int(p3)), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -186,7 +186,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, user_una
 		confirm_window.mainloop()
 
 
-def sellItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, stored_iqty, sold_iqty):
+def sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, stored_iqty, sold_iqty):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -214,5 +214,6 @@ def sellItem(confirm_window, add_window, master, master_master, inventory_frame,
 	save=query.execute("""COMMIT""")
 
 	ops.populateInventory(user_uname, inventory_frame)
+	ops.showStats(stats_frame, user_uname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
