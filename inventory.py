@@ -76,12 +76,6 @@ class MyInventory:
 		self.inventory_frame.place(relx=0.18, rely=0.15)
 
 
-		self.columns_frame=Frame( #container frame for user inventory heading
-			self.inventory_frame, width=516, height=30, borderwidth=2, relief=RAISED, 
-			bg=common.colors['menu']
-		)
-		self.columns_frame.place(relx=0.0, rely=0.0)
-
 		self.stats_frame=Frame( #statistics frame for inventory
 			self.master, width=260, height=380, borderwidth=2, relief=GROOVE, bg=common.colors['info sheet']
 		)
@@ -121,26 +115,7 @@ class MyInventory:
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.15, rely=0.7)
-
-
-		Label( #title label for item name
-			self.columns_frame, text='Item Name', font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['header text'], bg=common.colors['outer'], width=25,
-			borderwidth=2, relief=SUNKEN
-		).place(relx=0.02, rely=0.16)
-
-		Label( #title label for item quantity 
-			self.columns_frame, text='Quantity Available', font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
-			borderwidth=2, relief=SUNKEN
-		).place(relx=0.4, rely=0.16)
-
-		Label( #title label for item price
-			self.columns_frame, text='Price per Unit (N)', font=(common.fonts['common text'], 10, 'normal'),
-			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
-			borderwidth=2, relief=SUNKEN
-		).place(relx=0.7, rely=0.16)
-
+		
 
 		ops.populateInventory(user_uname, self.inventory_frame)	#populates inventory frame with items in user's inventory
 

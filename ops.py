@@ -34,6 +34,30 @@ def populateInventory(user_uname, inventory_frame):
 	inventory=query.fetchall() #gets rows from table
 
 	if(inventory_items>0):
+		columns_frame=Frame( #container frame for user inventory heading
+			inventory_frame, width=516, height=30, borderwidth=2, relief=RAISED, 
+			bg=common.colors['menu']
+		)
+		columns_frame.place(relx=0.0, rely=0.0)
+
+		Label( #title label for item name
+			columns_frame, text='Item Name', font=(common.fonts['common text'], 10, 'normal'),
+			fg=common.colors['header text'], bg=common.colors['outer'], width=25,
+			borderwidth=2, relief=SUNKEN
+		).place(relx=0.02, rely=0.16)
+
+		Label( #title label for item quantity 
+			columns_frame, text='Quantity Available', font=(common.fonts['common text'], 10, 'normal'),
+			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
+			borderwidth=2, relief=SUNKEN
+		).place(relx=0.4, rely=0.16)
+
+		Label( #title label for item price
+			columns_frame, text='Price per Unit (N)', font=(common.fonts['common text'], 10, 'normal'),
+			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
+			borderwidth=2, relief=SUNKEN
+		).place(relx=0.7, rely=0.16)
+
 		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
 			inventory_frame, hull_width=519, hull_height=270, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
@@ -77,6 +101,9 @@ def populateInventory(user_uname, inventory_frame):
 		data_pane.place(relx=0.0, rely=0.1) #positions scrollable canvas
 		data_pane.resizescrollregion() #activates scrolling when items exceed canvas size
 	else:
+		for widget in inventory_frame.winfo_children():
+			widget.destroy()
+
 		Message( #message if user has no items in inventory 
 			inventory_frame, text='You have nothing in your inventory.', width=350,
 			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
