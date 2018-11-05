@@ -234,3 +234,6 @@ def editAccount(confirm_window, add_window, master, master_master, user_uname, n
 
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
+	ops.closeToplevel(master, master_master, None, False)
+	master_master.geometry('800x500+300+100')
+	master_master.deiconify()
