@@ -383,7 +383,7 @@ def showStats(master, user_uname):
 		data_container.configure(bg=common.colors['info sheet'])
 
 		get_sale_dates=query.execute(
-			"""SELECT date_of_sale FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (user_uname.lower())
+			"""SELECT DATE_FORMAT(date_of_sale, '%s') FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (str.format('%d-%m-%Y'), user_uname.lower())
 		)
 		sale_dates=query.fetchall()
 
@@ -407,7 +407,7 @@ def showStats(master, user_uname):
 		y=np.array(y_axis)
 
 
-		fig = Figure(figsize=(4, 2))
+		fig = Figure(figsize=(4, 2.1))
 		a = fig.add_subplot(221)
 
 		if(len(x)>1):
@@ -419,10 +419,11 @@ def showStats(master, user_uname):
 		a.set_title ("This Week's Sales")
 		a.set_ylabel("Number of sales")
 		a.set_xlabel("Date")
+		a.set_xticklabels(x_axis, rotation=90)
 		a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
 		sales_frame=Frame( #frame for item row
-			data_container, width=248, height=150, borderwidth=0,
+			data_container, width=240, height=240, borderwidth=1, relief=GROOVE, 
 			bg=common.colors['info sheet']
 		)
 		sales_frame.place(relx=0.01, rely=0.01)
