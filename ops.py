@@ -53,7 +53,7 @@ def populateInventory(user_uname, inventory_frame):
 		).place(relx=0.4, rely=0.16)
 
 		Label( #title label for item price
-			columns_frame, text='Price per Unit (N)', font=(common.fonts['common text'], 10, 'normal'),
+			columns_frame, text='Price per Unit', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
 			borderwidth=2, relief=SUNKEN
 		).place(relx=0.7, rely=0.16)
@@ -89,7 +89,7 @@ def populateInventory(user_uname, inventory_frame):
 			).place(relx=0.4, rely=0.1)
 
 			Label( #label for item price
-				data_frame, text=row[2], font=(common.fonts['common text'], 10, 'normal'),
+				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
@@ -431,6 +431,22 @@ def showStats(master, user_uname):
 		canvas=FigureCanvasTkAgg(fig, master=sales_frame)
 		canvas.get_tk_widget().place(relx=0.06, rely=0.1)
 		canvas.draw()
+
+		other_stats_frame=Frame( #frame for item row
+			data_container, width=240, height=400, borderwidth=1, relief=GROOVE, 
+			bg=common.colors['info sheet']
+		)
+		other_stats_frame.place(relx=0.01, rely=0.7)
+
+		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM q_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())", con=db, index_col=None)
+
+		Message( #message if user has no items in inventory 
+			other_stats_frame, 
+			text=u'\u2022 '+"This Week's Revenue: "+u'\u20A6'+week_revenue.to_string(index=False, justify='left', header=False), 
+			width=230, font=(common.fonts['common text'], 10, 'normal'), justify=LEFT, 
+			fg=common.colors['menu text'],
+			bg=common.colors['info sheet']
+		).place(relx=0.01, rely=0.01)
 
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
 		data_pane.resizescrollregion()	
