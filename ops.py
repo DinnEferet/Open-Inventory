@@ -432,24 +432,38 @@ def showStats(master, user_uname):
 		canvas.get_tk_widget().place(relx=0.06, rely=0.1)
 		canvas.draw()
 
+		data_pane.create_window(240, 0, window=sales_frame)
+
 		other_stats_frame=Frame( #frame for item row
-			data_container, width=240, height=400, borderwidth=1, relief=GROOVE, 
+			data_container, width=240, height=100, borderwidth=1, relief=GROOVE, 
 			bg=common.colors['info sheet']
 		)
 		other_stats_frame.place(relx=0.01, rely=0.7)
 
-		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM q_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())", con=db, index_col=None)
+		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())" % (user_uname.lower()), con=db, index_col=None)
 
 		Message( #message if user has no items in inventory 
 			other_stats_frame, 
 			text=u'\u2022 '+"This Week's Revenue: "+u'\u20A6'+week_revenue.to_string(index=False, justify='left', header=False), 
-			width=230, font=(common.fonts['common text'], 10, 'normal'), justify=LEFT, 
+			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
-		).place(relx=0.01, rely=0.01)
+		).place(relx=0.01, rely=0.05)
+
+		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+
+		Message( #message if user has no items in inventory 
+			other_stats_frame, 
+			text=u'\u2022 '+"Most Sold Item This Week: "+most_sold_item.to_string(index=False, justify='left', header=False), 
+			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
+			fg=common.colors['menu text'],
+			bg=common.colors['info sheet']
+		).place(relx=0.01, rely=0.25)
+
+		data_pane.create_window(240, 170, window=other_stats_frame)
 
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
-		data_pane.resizescrollregion()	
+		data_pane.resizescrollregion()
 	else:
 		Message( #message if user has no items in inventory 
 			master, text='No stats yet.', width=100,
