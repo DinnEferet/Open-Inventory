@@ -228,17 +228,17 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 	about_window.resizable(0,0)
 	
 	title=Message(
-		about_window, text='\nOpen Inventory', width=400, font=(common.fonts['common text'], 14, 'normal'), 
+		about_window, text='\nOpen Inventory', width=400, font=(common.fonts['common text'], 14, 'bold'), 
 		justify=CENTER, fg=common.colors['menu text']
 	)
 	title.pack(side=TOP, fill=X)
 
 	about=Message(
 		about_window, text='Version 1.0'
-		'\n\n\nCopyright '+u'\N{COPYRIGHT SIGN}'.encode('utf-8')+' 2018 Dinn Eferet. All rights reserved.'
+		'\n\n\nCopyright '+u'\u00a9'+' 2018 Dinn Eferet. All rights reserved.'
 		'\n\nGNU General Public License v3.0.'
-		'\n\n\nGitHub Repository:', 
-		font=(common.fonts['common text'], 10, 'normal'), width=400, justify=CENTER, 
+		'\n\n\nSource Code (for developers):', 
+		font=(common.fonts['common text'], 10, 'bold'), width=400, justify=CENTER, 
 		fg=common.colors['menu text']
 	)
 	about.pack(side=TOP, fill=X)
@@ -444,7 +444,7 @@ def showStats(master, user_uname):
 
 		Message( #message if user has no items in inventory 
 			other_stats_frame, 
-			text=u'\u2022 '+"This Week's Revenue: "+u'\u20A6'+week_revenue.to_string(index=False, justify='left', header=False), 
+			text=u'\u2022 '+"This Week's Revenue: "+u'\u20a6'+week_revenue.to_string(index=False, justify='left', header=False), 
 			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
@@ -459,6 +459,16 @@ def showStats(master, user_uname):
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
 		).place(relx=0.01, rely=0.25)
+
+		purchase_suggestions=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+
+		Message( #message if user has no items in inventory 
+			other_stats_frame, 
+			text=u'\u2022 '+"Purchase Suggestions: \n"+purchase_suggestions.to_string(index=False, justify='left', header=True), 
+			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
+			fg=common.colors['menu text'],
+			bg=common.colors['info sheet']
+		).place(relx=0.01, rely=0.4)
 
 		data_pane.create_window(240, 170, window=other_stats_frame)
 

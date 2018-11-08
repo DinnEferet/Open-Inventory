@@ -39,9 +39,9 @@ class Footer:
 		self.footer_frame.pack(fill=X, side=BOTTOM) #positions frame
 
 		self.footer=Label( #label for footer; text is Copyright info
-			self.footer_frame, text='Copyright '+u'\N{COPYRIGHT SIGN}'.encode('utf-8')+
-			' 2018 Dinn Eferet. All rights reserved.', font=(fonts['common text'], 10, 'normal'), 
-			fg=colors['footer text'], bg=colors['footer'], pady=40
+			self.footer_frame, text='Copyright '+u'\u00a9'+' 2018 Dinn Eferet. All rights reserved.', 
+			font=(fonts['common text'], 10, 'normal'), fg=colors['footer text'], 
+			bg=colors['footer'], pady=40
 		)
 	
 		self.footer.pack(side=TOP, fill=BOTH) #positions label
