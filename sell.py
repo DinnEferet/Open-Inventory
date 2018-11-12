@@ -136,7 +136,10 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 	if(int(stored_iqty)==0):
 		ops.xopenAlert(add_window, master, master_master, 'You have no units of this item in stock!', 'Okay')
 	elif(int(p3)>int(stored_iqty)):
-		ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
+		if(int(stored_iqty)==1):
+			ops.xopenAlert(add_window, master, master_master, 'You only have %s unit of this item in stock!' % (stored_iqty), 'Okay')
+		else:
+			ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

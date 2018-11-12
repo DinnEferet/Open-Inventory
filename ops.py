@@ -99,6 +99,7 @@ def populateInventory(user_uname, inventory_frame):
 			j+=30
 
 		data_pane.place(relx=0.0, rely=0.1) #positions scrollable canvas
+		data_pane.yview('scroll', -10, 'pages')
 		data_pane.resizescrollregion() #activates scrolling when items exceed canvas size
 	else:
 		for widget in inventory_frame.winfo_children():
@@ -361,6 +362,16 @@ def toGitHub(event):
 	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory") #opens Open Inventory GitHub repository in user's browser
 
 def showStats(master, user_uname):
+	stats_header=Frame( #statistics frame for inventory
+		master, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+	)
+	stats_header.place(relx=0, rely=0)
+
+	Label(
+		stats_header, text='Weekly Stats', font=(common.fonts['common text'], 11, 'bold'),
+		fg=common.colors['menu text'], bg=common.colors['outer']
+	).place(relx=0.35, rely=0.01)
+
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -403,24 +414,40 @@ def showStats(master, user_uname):
 			for s in sale:
 				y_axis.append(int(s))
 
-		x=np.array(x_axis)
-		y=np.array(y_axis)
+		if(len(x_axis)==0):
+			x=np.array([str(date.datetime.now().strftime('%d-%m-%Y'))])
+			y=np.array([''])
 
+			fig = Figure(figsize=(4, 2.1))
+			a = fig.add_subplot(221)
 
-		fig = Figure(figsize=(4, 2.1))
-		a = fig.add_subplot(221)
-
-		if(len(x)>1):
-			a.plot(x, y, color='red')
-		else:
 			a.scatter(x, y, color='red')
 
 
-		a.set_title ("This Week's Sales")
-		a.set_ylabel("Number of sales")
-		a.set_xlabel("Date")
-		a.set_xticklabels(x_axis, rotation=90)
-		a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+			a.set_title ("This Week's Sales")
+			a.set_ylabel("Number of sales")
+			a.set_xlabel("Date")
+			a.set_xticklabels([str(date.datetime.now().strftime('%d-%m-%Y'))], rotation=90)
+			a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+		else:
+			x=np.array(x_axis)
+			y=np.array(y_axis)
+
+			fig = Figure(figsize=(4, 2.1))
+			a = fig.add_subplot(221)
+
+			if(len(x)>1):
+				a.plot(x, y, color='red')
+			else:
+				a.scatter(x, y, color='red')
+
+
+			a.set_title ("This Week's Sales")
+			a.set_ylabel("Number of sales")
+			a.set_xlabel("Date")
+			a.set_xticklabels(x_axis, rotation=90)
+			a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+
 
 		sales_frame=Frame( #frame for item row
 			data_container, width=240, height=240, borderwidth=1, relief=GROOVE, 
@@ -435,44 +462,148 @@ def showStats(master, user_uname):
 		data_pane.create_window(240, 0, window=sales_frame)
 
 		other_stats_frame=Frame( #frame for item row
-			data_container, width=240, height=100, borderwidth=1, relief=GROOVE, 
+			data_container, width=240, height=250, borderwidth=1, relief=GROOVE, 
 			bg=common.colors['info sheet']
 		)
-		other_stats_frame.place(relx=0.01, rely=0.7)
+		other_stats_frame.place(relx=0.01, rely=0.95)
 
 		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())" % (user_uname.lower()), con=db, index_col=None)
 
-		Message( #message if user has no items in inventory 
-			other_stats_frame, 
-			text=u'\u2022 '+"This Week's Revenue: "+u'\u20a6'+week_revenue.to_string(index=False, justify='left', header=False), 
-			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
-			fg=common.colors['menu text'],
-			bg=common.colors['info sheet']
-		).place(relx=0.01, rely=0.05)
+		if(week_revenue.to_string(index=False, justify='left', header=False)=='None'):
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="This Week's Revenue:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.05)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text=u'\u20a6'+'0.0', 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.15)
+		else:
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="This Week's Revenue:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.05)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text=u'\u20a6'+week_revenue.to_string(index=False, justify='left', header=False), 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.15)
 
 		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
-		Message( #message if user has no items in inventory 
-			other_stats_frame, 
-			text=u'\u2022 '+"Most Sold Item This Week: "+most_sold_item.to_string(index=False, justify='left', header=False), 
-			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
-			fg=common.colors['menu text'],
-			bg=common.colors['info sheet']
-		).place(relx=0.01, rely=0.25)
+		if(most_sold_item.empty):
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Most Sold Item This Week:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.25)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="None yet.", 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.35)
+		else:
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Most Sold Item This Week:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.25)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text=most_sold_item.to_string(index=False, justify='left', header=False), 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.35)
 
-		purchase_suggestions=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
-		Message( #message if user has no items in inventory 
-			other_stats_frame, 
-			text=u'\u2022 '+"Purchase Suggestions: \n"+purchase_suggestions.to_string(index=False, justify='left', header=True), 
-			width=220, font=(common.fonts['common text'], 9, 'bold'), justify=LEFT, 
-			fg=common.colors['menu text'],
-			bg=common.colors['info sheet']
-		).place(relx=0.01, rely=0.4)
+		if(least_sold_item.empty or least_sold_item.to_string(index=False, justify='left', header=False)==most_sold_item.to_string(index=False, justify='left', header=False)):
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Least Sold Item This Week:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.45)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="None yet.", 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.55)
+		else:
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Least Sold Item This Week:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.45)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text=least_sold_item.to_string(index=False, justify='left', header=False), 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.55)
 
-		data_pane.create_window(240, 170, window=other_stats_frame)
+		restock_suggestions=pd.read_sql("SELECT item_name, quantity FROM %s_items WHERE quantity<10" % (user_uname.lower()), con=db, index_col=None)
+
+		if(restock_suggestions.empty):
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Restock Suggestions:", 
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.65)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="None yet.", 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.75)
+		else:
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text="Restock Suggestions:",
+				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.65)
+			Message( #message if user has no items in inventory 
+				other_stats_frame, 
+				text=restock_suggestions.to_string(index=False, justify='left', col_space=25, header=['Item Name', 'Quantity Available']), 
+				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
+				fg=common.colors['menu text'],
+				bg=common.colors['info sheet']
+			).place(relx=0.05, rely=0.75)
+
+
+		data_pane.create_window(240, 220, window=other_stats_frame)
 
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
+		data_pane.yview('scroll', -150, 'pages')
 		data_pane.resizescrollregion()
 	else:
 		Message( #message if user has no items in inventory 
@@ -481,4 +612,22 @@ def showStats(master, user_uname):
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
 		).place(relx=0.3, rely=0.2)
+
+
+	stats_footer=Frame( #statistics frame for inventory
+		master, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+	)
+	stats_footer.place(relx=0, rely=0.91)
+
+	Button( #logout button
+		stats_footer, text='Print', command=lambda: common.__ignore, 
+		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
+		font=(common.fonts['common text'], 9, 'normal'), width=10
+	).place(relx=0.04, rely=0.1)
+
+	Button( #logout button
+		stats_footer, text='Comprehensive Stats', command=lambda: common.__ignore, 
+		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
+		font=(common.fonts['common text'], 9, 'normal'), width=22
+	).place(relx=0.4, rely=0.1)
 

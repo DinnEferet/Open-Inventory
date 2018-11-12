@@ -153,24 +153,12 @@ class MyInventory:
 		self.stats_header.place(relx=0, rely=0)
 
 		Label(
-			self.stats_header, text='Stats', font=(common.fonts['common text'], 11, 'bold'),
+			self.stats_header, text='Weekly Stats', font=(common.fonts['common text'], 11, 'bold'),
 			fg=common.colors['menu text'], bg=common.colors['outer']
-		).place(relx=0.4, rely=0.01)
+		).place(relx=0.35, rely=0.01)
 
 
 		ops.showStats(self.stats_frame, user_uname)
-
-
-		self.stats_footer=Frame( #statistics frame for inventory
-			self.stats_frame, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
-		)
-		self.stats_footer.place(relx=0, rely=0.91)
-
-		Button( #logout button
-			self.stats_footer, text='Print Stats', command=lambda: self.ignore(), 
-			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
-			font=(common.fonts['common text'], 10, 'normal'), width=12
-		).place(relx=0.33, rely=0.1)
 
 		common.Footer(self.master) 
 
