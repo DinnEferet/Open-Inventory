@@ -11,7 +11,7 @@ import ops
 
 
 #inventory item addition methods
-def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
+def openAddItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
 	window.geometry('400x200+450+220')
@@ -55,7 +55,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 	iqty_input.place(relx=0.4, rely=0.4)
 
 	iprice_label=Label(
-		window, text='Item Price (N)', font=(common.fonts['common text'], 11, 'normal'), 
+		window, text='Item Price ('+u'\u20A6'+")", font=(common.fonts['common text'], 11, 'normal'), 
 		fg=common.colors['menu text']
 	)
 	iprice_label.place(relx=0.1, rely=0.55)
@@ -71,7 +71,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 
 	add_item=Button(
 		window, text='Add Item',
-		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice), 
+		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=9
 	)
@@ -94,7 +94,7 @@ def openAddItem(master, master_master, inventory_frame, user_uname, user_bname):
 	window.mainloop()
 
 
-def confirmAddItem(add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice):
+def confirmAddItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice):
 	p1=user_uname
 	p2=iname.get()
 	p3=iqty.get()
@@ -141,7 +141,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, user_unam
 
 		yep=Button(
 			confirm_window, text='Yes! Add My Item!', 
-			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, p3, p4), 
+			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, p2, p3, p4), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -166,7 +166,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, user_unam
 		confirm_window.mainloop()
 
 
-def addItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, iname, iqty, iprice):
+def addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -180,6 +180,7 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 	save=query.execute("""COMMIT""")
 
 	ops.populateInventory(user_uname, inventory_frame)
+	ops.showStats(stats_frame, user_uname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
 

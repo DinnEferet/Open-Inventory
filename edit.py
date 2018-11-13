@@ -10,7 +10,7 @@ import common #python file with useful specifications
 import ops
 
 
-def openEditItem(master, master_master, inventory_frame, user_uname, user_bname):
+def openEditItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	item_list=()
 
 	db=sql.connect(
@@ -110,7 +110,7 @@ def openEditItem(master, master_master, inventory_frame, user_uname, user_bname)
 
 		edit_item=Button(
 			window, text='Save', 
-			command=lambda: confirmEditItem(window, master, master_master, inventory_frame, user_uname, old_iname.get(), iname, iqty, iprice), 
+			command=lambda: confirmEditItem(window, master, master_master, inventory_frame, stats_frame, user_uname, old_iname.get(), iname, iqty, iprice), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=8
 		)
@@ -135,7 +135,7 @@ def openEditItem(master, master_master, inventory_frame, user_uname, user_bname)
 		ops.openAlert(master, master_master, 'You have no items to edit! \nMaybe add a few?', 'Okay', True)
 
 
-def confirmEditItem(add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):
+def confirmEditItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, old_iname, iname, iqty, iprice):
 	p1=user_uname
 	p2=old_iname
 	p3=iname.get()
@@ -175,7 +175,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, user_una
 
 		yep=Button(
 			confirm_window, text='Yes! Save My Edits!', 
-			command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, p1, p2, p3, p4, p5), 
+			command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, p2, p3, p4, p5), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -200,7 +200,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, user_una
 		confirm_window.mainloop()
 
 
-def editItem(confirm_window, add_window, master, master_master, inventory_frame, user_uname, old_iname, iname, iqty, iprice):
+def editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, old_iname, iname, iqty, iprice):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -233,5 +233,6 @@ def editItem(confirm_window, add_window, master, master_master, inventory_frame,
 
 
 	ops.populateInventory(user_uname, inventory_frame)
+	ops.showStats(stats_frame, user_uname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)

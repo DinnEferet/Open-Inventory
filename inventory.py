@@ -91,21 +91,21 @@ class MyInventory:
 
 		Button( #add new item button
 			self.button_frame, text='Add Item', 
-			command=lambda: add.openAddItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
+			command=lambda: add.openAddItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.15, rely=0.25)
 
 		Button( #edit existing item button
 			self.button_frame, text='Edit Item',
-			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, user_uname, user_bname),
+			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname),
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.15, rely=0.4)
 
 		Button( #delete item button
 			self.button_frame, text='Delete Item', 
-			command=lambda: drop.openDropItem(self.master, master, self.inventory_frame, user_uname, user_bname), 
+			command=lambda: drop.openDropItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.15, rely=0.55)
@@ -145,17 +145,6 @@ class MyInventory:
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=11
 		).place(relx=0.72, rely=0)
-
-
-		self.stats_header=Frame( #statistics frame for inventory
-			self.stats_frame, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
-		)
-		self.stats_header.place(relx=0, rely=0)
-
-		Label(
-			self.stats_header, text='Weekly Stats', font=(common.fonts['common text'], 11, 'bold'),
-			fg=common.colors['menu text'], bg=common.colors['outer']
-		).place(relx=0.35, rely=0.01)
 
 
 		ops.showStats(self.stats_frame, user_uname)

@@ -9,7 +9,7 @@ import MySQLdb as sql #module for MySQL database connections
 import datetime as date #module for date
 import common #python file with useful specifications
 import inventory
-import pandas as pd 
+import pandas as pd
 import numpy as np
 import matplotlib as mpl
 mpl.use('TkAgg')
@@ -43,19 +43,19 @@ def populateInventory(user_uname, inventory_frame):
 		Label( #title label for item name
 			columns_frame, text='Item Name', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=25,
-			borderwidth=2, relief=SUNKEN
+			borderwidth=2, relief=GROOVE
 		).place(relx=0.02, rely=0.16)
 
 		Label( #title label for item quantity 
 			columns_frame, text='Quantity Available', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
-			borderwidth=2, relief=SUNKEN
+			borderwidth=2, relief=GROOVE
 		).place(relx=0.4, rely=0.16)
 
 		Label( #title label for item price
 			columns_frame, text='Price per Unit', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
-			borderwidth=2, relief=SUNKEN
+			borderwidth=2, relief=GROOVE
 		).place(relx=0.7, rely=0.16)
 
 		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
@@ -71,7 +71,7 @@ def populateInventory(user_uname, inventory_frame):
 		j=10
 		for row in inventory:
 			data_frame=Frame( #frame for item row
-				data_container, width=519, height=28, borderwidth=2, relief=SUNKEN, 
+				data_container, width=519, height=28, borderwidth=2, relief=GROOVE, 
 				bg=common.colors['inventory']
 			)
 			data_frame.place(relx=0.0, rely=i)
@@ -79,19 +79,19 @@ def populateInventory(user_uname, inventory_frame):
 			Label( #label for item name
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.02, rely=0.1)
 
 			Label( #label for item quantiy 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.4, rely=0.1)
 
 			Label( #label for item price
 				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
 
 			data_pane.create_window(300, j, window=data_frame) #binds frame to canvas
@@ -147,7 +147,7 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 		j=10
 		for row in searched_inventory:
 			data_frame=Frame( #frame for item row
-				data_container, width=519, height=28, borderwidth=2, relief=SUNKEN, 
+				data_container, width=519, height=28, borderwidth=2, relief=GROOVE, 
 				bg=common.colors['inventory']
 			)
 			data_frame.place(relx=0.0, rely=i)
@@ -155,19 +155,19 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 			Label( #label for item name
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.02, rely=0.1)
 
 			Label( #label for item quantiy 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.4, rely=0.1)
 
 			Label( #label for item price
-				data_frame, text=row[2], font=(common.fonts['common text'], 10, 'normal'),
+				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=SUNKEN, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
 
 			data_pane.create_window(300, j, window=data_frame) #binds frame to canvas
@@ -462,7 +462,7 @@ def showStats(master, user_uname):
 		data_pane.create_window(240, 0, window=sales_frame)
 
 		other_stats_frame=Frame( #frame for item row
-			data_container, width=240, height=250, borderwidth=1, relief=GROOVE, 
+			data_container, width=240, height=300, borderwidth=1, relief=GROOVE, 
 			bg=common.colors['info sheet']
 		)
 		other_stats_frame.place(relx=0.01, rely=0.95)
@@ -470,137 +470,170 @@ def showStats(master, user_uname):
 		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())" % (user_uname.lower()), con=db, index_col=None)
 
 		if(week_revenue.to_string(index=False, justify='left', header=False)=='None'):
-			Message( #message if user has no items in inventory 
+			Message(
 				other_stats_frame, 
 				text="This Week's Revenue:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.05)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.02)
+
+			Message( 
 				other_stats_frame, 
 				text=u'\u20a6'+'0.0', 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.15)
+			).place(relx=0.05, rely=0.1)
 		else:
-			Message( #message if user has no items in inventory 
+			Message( 
 				other_stats_frame, 
 				text="This Week's Revenue:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.05)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.02)
+
+			Message(
 				other_stats_frame, 
 				text=u'\u20a6'+week_revenue.to_string(index=False, justify='left', header=False), 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.15)
+			).place(relx=0.05, rely=0.1)
 
 		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
 		if(most_sold_item.empty):
-			Message( #message if user has no items in inventory 
+			Message(
 				other_stats_frame, 
 				text="Most Sold Item This Week:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.25)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.22)
+
+			Message(
 				other_stats_frame, 
 				text="None yet.", 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.35)
+			).place(relx=0.05, rely=0.3)
 		else:
-			Message( #message if user has no items in inventory 
+			Message(
 				other_stats_frame, 
 				text="Most Sold Item This Week:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.25)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.22)
+
+			Message(
 				other_stats_frame, 
 				text=most_sold_item.to_string(index=False, justify='left', header=False), 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.35)
+			).place(relx=0.05, rely=0.3)
 
 		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
 		if(least_sold_item.empty or least_sold_item.to_string(index=False, justify='left', header=False)==most_sold_item.to_string(index=False, justify='left', header=False)):
-			Message( #message if user has no items in inventory 
+			Message( 
 				other_stats_frame, 
 				text="Least Sold Item This Week:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.45)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.42)
+
+			Message(
 				other_stats_frame, 
 				text="None yet.", 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.55)
+			).place(relx=0.05, rely=0.5)
 		else:
-			Message( #message if user has no items in inventory 
+			Message( 
 				other_stats_frame, 
 				text="Least Sold Item This Week:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.45)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.42)
+
+			Message(
 				other_stats_frame, 
 				text=least_sold_item.to_string(index=False, justify='left', header=False), 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.55)
+			).place(relx=0.05, rely=0.5)
 
 		restock_suggestions=pd.read_sql("SELECT item_name, quantity FROM %s_items WHERE quantity<10" % (user_uname.lower()), con=db, index_col=None)
 
 		if(restock_suggestions.empty):
-			Message( #message if user has no items in inventory 
+			Message(
 				other_stats_frame, 
 				text="Restock Suggestions:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.65)
-			Message( #message if user has no items in inventory 
+			).place(relx=0.05, rely=0.62)
+
+			Message(
 				other_stats_frame, 
 				text="None yet.", 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.75)
+			).place(relx=0.05, rely=0.7)
 		else:
-			Message( #message if user has no items in inventory 
+			Message(
 				other_stats_frame, 
 				text="Restock Suggestions:",
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.65)
-			Message( #message if user has no items in inventory 
-				other_stats_frame, 
-				text=restock_suggestions.to_string(index=False, justify='left', col_space=25, header=['Item Name', 'Quantity Available']), 
-				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
-				fg=common.colors['menu text'],
-				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.75)
+			).place(relx=0.05, rely=0.62)
 
 
-		data_pane.create_window(240, 220, window=other_stats_frame)
+			get_suggestions=query.execute(
+				"""SELECT item_name, quantity FROM %s_items WHERE quantity<10""" % (user_uname.lower())
+			)
+			suggestions=query.fetchall()
+
+			Label(
+				other_stats_frame, text='Item Name', font=(common.fonts['common text'], 8, 'bold'), 
+				fg=common.colors['menu text'], bg=common.colors['info sheet']
+			).place(relx=0.06, rely=0.7)
+
+			Label(
+				other_stats_frame, text='Quantity Available', font=(common.fonts['common text'], 8, 'bold'), 
+				fg=common.colors['menu text'], bg=common.colors['info sheet']
+			).place(relx=0.55, rely=0.7)
+
+			j=0.75
+
+			for suggestion in suggestions:
+				Message(
+					other_stats_frame, text=str(suggestion[0]), width=150,
+					font=(common.fonts['common text'], 8, 'normal'), 
+					fg=common.colors['menu text'], bg=common.colors['info sheet']
+				).place(relx=0.05, rely=j)
+
+				Message(
+					other_stats_frame, text=str(suggestion[1]), width=90,
+					font=(common.fonts['common text'], 8, 'normal'), 
+					fg=common.colors['menu text'], bg=common.colors['info sheet']
+				).place(relx=0.7, rely=j)
+
+				j+=0.05
+
+
+		data_pane.create_window(240, 270, window=other_stats_frame)
 
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
 		data_pane.yview('scroll', -150, 'pages')
