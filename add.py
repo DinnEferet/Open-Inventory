@@ -71,7 +71,7 @@ def openAddItem(master, master_master, inventory_frame, stats_frame, user_uname,
 
 	add_item=Button(
 		window, text='Add Item',
-		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice), 
+		command=lambda: confirmAddItem(window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, iqty, iprice), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=9
 	)
@@ -94,7 +94,7 @@ def openAddItem(master, master_master, inventory_frame, stats_frame, user_uname,
 	window.mainloop()
 
 
-def confirmAddItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice):
+def confirmAddItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, iqty, iprice):
 	p1=user_uname
 	p2=iname.get()
 	p3=iqty.get()
@@ -141,7 +141,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 
 		yep=Button(
 			confirm_window, text='Yes! Add My Item!', 
-			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, p2, p3, p4), 
+			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, p3, p4), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -166,7 +166,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 		confirm_window.mainloop()
 
 
-def addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname, iqty, iprice):
+def addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname,  user_bname, iname, iqty, iprice):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -180,7 +180,7 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 	save=query.execute("""COMMIT""")
 
 	ops.populateInventory(user_uname, inventory_frame)
-	ops.showStats(stats_frame, user_uname)
+	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
 

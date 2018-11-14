@@ -12,6 +12,7 @@ import inventory
 import pandas as pd
 import numpy as np
 import matplotlib as mpl
+import mainstats
 mpl.use('TkAgg')
 mpl.rcParams.update({'font.size': 6})
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -361,9 +362,9 @@ def restoreInventoryDefaultClose(victim, vmaster):
 def toGitHub(event):
 	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory") #opens Open Inventory GitHub repository in user's browser
 
-def showStats(master, user_uname):
+def showStats(master, master_master, stats_frame, user_uname, user_bname):
 	stats_header=Frame( #statistics frame for inventory
-		master, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+		stats_frame, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 	)
 	stats_header.place(relx=0, rely=0)
 
@@ -385,7 +386,7 @@ def showStats(master, user_uname):
 
 	if(inventory_sales>0):
 		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
-			master, hull_width=256, hull_height=310, usehullsize=1, borderframe=1,
+			stats_frame, hull_width=256, hull_height=310, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
@@ -450,10 +451,10 @@ def showStats(master, user_uname):
 
 
 		sales_frame=Frame( #frame for item row
-			data_container, width=240, height=240, borderwidth=1, relief=GROOVE, 
+			data_container, width=240, height=240, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
-		sales_frame.place(relx=0.01, rely=0.01)
+		sales_frame.place(relx=0.09, rely=0.01)
 
 		canvas=FigureCanvasTkAgg(fig, master=sales_frame)
 		canvas.get_tk_widget().place(relx=0.06, rely=0.1)
@@ -462,10 +463,10 @@ def showStats(master, user_uname):
 		data_pane.create_window(240, 0, window=sales_frame)
 
 		other_stats_frame=Frame( #frame for item row
-			data_container, width=240, height=300, borderwidth=1, relief=GROOVE, 
+			data_container, width=240, height=220, borderwidth=0, 
 			bg=common.colors['info sheet']
 		)
-		other_stats_frame.place(relx=0.01, rely=0.95)
+		other_stats_frame.place(relx=0.09, rely=0.5)
 
 		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())" % (user_uname.lower()), con=db, index_col=None)
 
@@ -572,32 +573,42 @@ def showStats(master, user_uname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.5)
 
+		data_pane.create_window(240, 200, window=other_stats_frame)
+
+		other_stats_frame_x=Frame( #frame for item row
+			data_container, width=240, height=50, borderwidth=0,
+			bg=common.colors['info sheet']
+		)
+		other_stats_frame_x.place(relx=0.09, rely=0.8)
+
 		restock_suggestions=pd.read_sql("SELECT item_name, quantity FROM %s_items WHERE quantity<10" % (user_uname.lower()), con=db, index_col=None)
 
 		if(restock_suggestions.empty):
 			Message(
-				other_stats_frame, 
+				other_stats_frame_x, 
 				text="Restock Suggestions:", 
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.62)
+			).place(relx=0.05, rely=0.05)
 
 			Message(
-				other_stats_frame, 
+				other_stats_frame_x, 
 				text="None yet.", 
 				width=220, font=(common.fonts['common text'], 8, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.7)
+			).place(relx=0.05, rely=0.45)
+
+			data_pane.create_window(240, 260, window=other_stats_frame_x)
 		else:
 			Message(
-				other_stats_frame, 
+				other_stats_frame_x, 
 				text="Restock Suggestions:",
 				width=220, font=(common.fonts['common text'], 10, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
-			).place(relx=0.05, rely=0.62)
+			).place(relx=0.05, rely=0.05)
 
 
 			get_suggestions=query.execute(
@@ -606,41 +617,51 @@ def showStats(master, user_uname):
 			suggestions=query.fetchall()
 
 			Label(
-				other_stats_frame, text='Item Name', font=(common.fonts['common text'], 8, 'bold'), 
+				other_stats_frame_x, text='Item Name', font=(common.fonts['common text'], 8, 'bold'), 
 				fg=common.colors['menu text'], bg=common.colors['info sheet']
-			).place(relx=0.06, rely=0.7)
+			).place(relx=0.06, rely=0.45)
 
 			Label(
-				other_stats_frame, text='Quantity Available', font=(common.fonts['common text'], 8, 'bold'), 
+				other_stats_frame_x, text='Quantity Available', font=(common.fonts['common text'], 8, 'bold'), 
 				fg=common.colors['menu text'], bg=common.colors['info sheet']
-			).place(relx=0.55, rely=0.7)
+			).place(relx=0.55, rely=0.45)
 
-			j=0.75
+			data_pane.create_window(240, 260, window=other_stats_frame_x)
+
+			j=285
+			i=0.9
 
 			for suggestion in suggestions:
-				Message(
-					other_stats_frame, text=str(suggestion[0]), width=150,
-					font=(common.fonts['common text'], 8, 'normal'), 
-					fg=common.colors['menu text'], bg=common.colors['info sheet']
-				).place(relx=0.05, rely=j)
+				suggestion_frame=Frame( #frame for item row
+					data_container, width=240, height=20, borderwidth=0,
+					bg=common.colors['info sheet']
+				)
+				suggestion_frame.place(relx=0.09, rely=i)
 
 				Message(
-					other_stats_frame, text=str(suggestion[1]), width=90,
+					suggestion_frame, text=str(suggestion[0]), width=150,
 					font=(common.fonts['common text'], 8, 'normal'), 
 					fg=common.colors['menu text'], bg=common.colors['info sheet']
-				).place(relx=0.7, rely=j)
+				).place(relx=0.05, rely=0)
 
-				j+=0.05
+				Message(
+					suggestion_frame, text=str(suggestion[1]), width=90,
+					font=(common.fonts['common text'], 8, 'normal'), 
+					fg=common.colors['menu text'], bg=common.colors['info sheet']
+				).place(relx=0.7, rely=0)
 
+				data_pane.create_window(240, j, window=suggestion_frame)
+				
+				j+=20
+				i+=0.03
 
-		data_pane.create_window(240, 270, window=other_stats_frame)
 
 		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
 		data_pane.yview('scroll', -150, 'pages')
 		data_pane.resizescrollregion()
 	else:
 		Message( #message if user has no items in inventory 
-			master, text='No stats yet.', width=100,
+			stats_frame, text='No stats yet.', width=100,
 			font=(common.fonts['common text'], 10, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
@@ -648,7 +669,7 @@ def showStats(master, user_uname):
 
 
 	stats_footer=Frame( #statistics frame for inventory
-		master, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
+		stats_frame, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 	)
 	stats_footer.place(relx=0, rely=0.91)
 
@@ -659,7 +680,7 @@ def showStats(master, user_uname):
 	).place(relx=0.04, rely=0.1)
 
 	Button( #logout button
-		stats_footer, text='Comprehensive Stats', command=lambda: common.__ignore, 
+		stats_footer, text='Comprehensive Stats', command=lambda: mainstats.openMainStats(master, master_master, user_uname, user_bname), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 		font=(common.fonts['common text'], 9, 'normal'), width=22
 	).place(relx=0.4, rely=0.1)

@@ -52,7 +52,7 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 		drop_item=Button(
 			window, text='Delete Item', 
-			command=lambda: confirmDropItem(window, master, master_master, inventory_frame, stats_frame, user_uname, iname), 
+			command=lambda: confirmDropItem(window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=10
 		)
@@ -77,7 +77,7 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 		ops.openAlert(master, master_master, 'You have no items to delete!', 'Okay', True)
 
 
-def confirmDropItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname):
+def confirmDropItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
 	p1=iname.get()
 
 	if(p1==''):
@@ -109,7 +109,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 
 		yep=Button(
 			confirm_window, text='Yes! Delete it!', 
-			command=lambda: dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, p1), 
+			command=lambda: dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, p1), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -136,7 +136,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your Inventory! Maybe check your spelling?', 'Okay')
 
 
-def dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, iname):
+def dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
 	)
@@ -150,6 +150,6 @@ def dropItem(confirm_window, add_window, master, master_master, inventory_frame,
 	save=query.execute("""COMMIT""")
 
 	ops.populateInventory(user_uname, inventory_frame)
-	ops.showStats(stats_frame, user_uname)
+	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)

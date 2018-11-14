@@ -147,7 +147,7 @@ class MyInventory:
 		).place(relx=0.72, rely=0)
 
 
-		ops.showStats(self.stats_frame, user_uname)
+		ops.showStats(self.master, master, self.stats_frame, user_uname, user_bname)
 
 		common.Footer(self.master) 
 
