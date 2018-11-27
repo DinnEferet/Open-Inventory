@@ -27,7 +27,7 @@ def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname
 	if(inventory_has_items>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
-		window.geometry('500x200+420+220')
+		window.geometry('500x200+400+220')
 		window.resizable(0,0)
 
 		title=Message(
@@ -38,10 +38,10 @@ def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname
 		title.place(relx=0.5, rely=0.03, anchor=N)
 		
 		iname_label=Label(
-			window, text='Select item (or type item name)', font=(common.fonts['common text'], 10, 'normal'), 
+			window, text='Select item or type name in full', font=(common.fonts['common text'], 10, 'normal'), 
 			fg=common.colors['menu text']
 		)
-		iname_label.place(relx=0.05, rely=0.2)
+		iname_label.place(relx=0.03, rely=0.2)
 
 		inventory_items=query.fetchall()
 
@@ -129,64 +129,68 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 		"""SELECT quantity FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
 
-	item=query.fetchall()
+	if(fetch_item>0):
+		item=query.fetchall()
 
-	stored_iqty=(item[0])[0]
+		stored_iqty=(item[0])[0]
 
-	if(int(stored_iqty)==0):
-		ops.xopenAlert(add_window, master, master_master, 'You have no units of this item in stock!', 'Okay')
-	elif(int(p3)>int(stored_iqty)):
-		if(int(stored_iqty)==1):
-			ops.xopenAlert(add_window, master, master_master, 'You only have %s unit of this item in stock!' % (stored_iqty), 'Okay')
+		if(int(stored_iqty)==0):
+			ops.xopenAlert(add_window, master, master_master, 'You have no units of this item in stock!', 'Okay')
+		elif(int(p3)>int(stored_iqty)):
+			if(int(stored_iqty)==1):
+				ops.xopenAlert(add_window, master, master_master, 'You only have %s unit of this item in stock!' % (stored_iqty), 'Okay')
+			else:
+				ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
 		else:
-			ops.xopenAlert(add_window, master, master_master, 'You only have %s units of this item in stock!' % (stored_iqty), 'Okay')
+			confirm_window=Toplevel(master_master)
+			confirm_window.title('')
+			confirm_window.geometry('400x130+450+270')
+			confirm_window.resizable(0,0)
+
+
+			get_price=query.execute(
+				"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+			)
+			price=query.fetchall()
+
+			amount_due=round((float((price[0])[0])*float(p3)), 2)
+
+
+			msg=Message(
+				confirm_window, text='Amount Due: N%s\nConfirm Sale?' % (amount_due), 
+				font=(common.fonts['common text'], 11, 'normal'), 
+				justify=CENTER, fg=common.colors['menu text'], width=300
+			)
+			msg.place(relx=0.5, rely=0.1, anchor=N)
+
+			yep=Button(
+				confirm_window, text='Yes! Sell This Item!', 
+				command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, int(stored_iqty), int(p3)), 
+				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+				font=(common.fonts['common text'], 10, 'normal'), width=15
+			)
+			yep.place(relx=0.3, rely=0.75, anchor=CENTER)
+
+			nope=Button(
+				confirm_window, text='No! Take Me Back!', 
+				command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
+				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
+				font=(common.fonts['common text'], 10, 'normal'), width=15
+			)
+			nope.place(relx=0.7, rely=0.75, anchor=CENTER)
+
+			confirm_window.focus_force()
+			confirm_window.grab_set()
+			confirm_window.transient(add_window)
+			add_window.transient(master)
+
+			confirm_window.protocol('WM_DELETE_WINDOW', lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master))
+			add_window.protocol('WM_DELETE_WINDOW', common.__ignore)
+
+			confirm_window.mainloop()
 	else:
-		confirm_window=Toplevel(master_master)
-		confirm_window.title('')
-		confirm_window.geometry('400x130+470+270')
-		confirm_window.resizable(0,0)
+		ops.xopenAlert(add_window, master, master_master, 'Item not found!\nCheck that full name is correct.', 'Okay')
 
-
-		get_price=query.execute(
-			"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
-		)
-		price=query.fetchall()
-
-		amount_due=round((float((price[0])[0])*float(p3)), 2)
-
-
-		msg=Message(
-			confirm_window, text='Amount Due: N%s\n\nConfirm Sale?' % (amount_due), 
-			font=(common.fonts['common text'], 11, 'normal'), 
-			justify=CENTER, fg=common.colors['menu text'], width=300
-		)
-		msg.place(relx=0.5, rely=0.1, anchor=N)
-
-		yep=Button(
-			confirm_window, text='Yes! Sell This Item!', 
-			command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, int(stored_iqty), int(p3)), 
-			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-			font=(common.fonts['common text'], 10, 'normal'), width=15
-		)
-		yep.place(relx=0.3, rely=0.75, anchor=CENTER)
-
-		nope=Button(
-			confirm_window, text='No! Take Me Back!', 
-			command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
-			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
-			font=(common.fonts['common text'], 10, 'normal'), width=15
-		)
-		nope.place(relx=0.7, rely=0.75, anchor=CENTER)
-
-		confirm_window.focus_force()
-		confirm_window.grab_set()
-		confirm_window.transient(add_window)
-		add_window.transient(master)
-
-		confirm_window.protocol('WM_DELETE_WINDOW', lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master))
-		add_window.protocol('WM_DELETE_WINDOW', common.__ignore)
-
-		confirm_window.mainloop()
 
 
 def sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, stored_iqty, sold_iqty):

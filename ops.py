@@ -237,9 +237,10 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 
 	about=Message(
 		about_window, text='Version 1.0'
-		'\n\n\nCopyright '+u'\u00a9'+' 2018 Dinn Eferet. All rights reserved.'
+		'\n\n\nCopyright '+u'\u00a9'+' 2018 American University of Nigeria.'
+		'\nDeveloped by Ross Hart.'
 		'\n\nGNU General Public License v3.0.'
-		'\n\n\nSource Code (for developers):', 
+		'\n\n\nOnline Repository:', 
 		font=(common.fonts['common text'], 10, 'bold'), width=400, justify=CENTER, 
 		fg=common.colors['menu text']
 	)
@@ -674,14 +675,8 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 	stats_footer.place(relx=0, rely=0.91)
 
 	Button( #logout button
-		stats_footer, text='Print', command=lambda: common.__ignore, 
+		stats_footer, text='More Stats', command=lambda: mainstats.openMainStats(master, master_master, user_uname, user_bname), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
-		font=(common.fonts['common text'], 9, 'normal'), width=10
-	).place(relx=0.04, rely=0.1)
-
-	Button( #logout button
-		stats_footer, text='Comprehensive Stats', command=lambda: mainstats.openMainStats(master, master_master, user_uname, user_bname), 
-		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
-		font=(common.fonts['common text'], 9, 'normal'), width=22
-	).place(relx=0.4, rely=0.1)
+		font=(common.fonts['common text'], 9, 'normal'), width=15
+	).place(relx=0.3, rely=0.1)
 

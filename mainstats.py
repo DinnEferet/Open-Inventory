@@ -26,9 +26,9 @@ def openMainStats(master, master_master, user_uname, user_bname):
 	window.resizable(0,0)
 
 	Label(
-		window, text='Comprehensive Stats', font=(common.fonts['common text'], 11, 'bold'),
+		window, text='More Stats', font=(common.fonts['common text'], 11, 'bold'),
 		fg=common.colors['menu text'],
-	).place(relx=0.35, rely=0.02)
+	).place(relx=0.42, rely=0.02)
 
 	db=sql.connect(
 		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
@@ -395,17 +395,11 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		).place(relx=0.3, rely=0.2)
 
 
-	Button( #logout button
-		window, text='Print', command=lambda: common.__ignore, 
-		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
-		font=(common.fonts['common text'], 9, 'normal'), width=10
-	).place(relx=0.2, rely=0.925)
-
 	Button(
 		window, text='Close', command=lambda: ops.closeToplevel(window, master, master_master, True), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=9
-	).place(relx=0.55, rely=0.925)
+	).place(relx=0.4, rely=0.925)
 
 	window.focus_force()
 	window.grab_set()

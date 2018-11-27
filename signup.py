@@ -14,7 +14,7 @@ import ops
 #user registration methods
 def openNewProfile(pmaster):
 	newprofile_window=Toplevel(pmaster)
-	newprofile_window.title('New Business Profile')
+	newprofile_window.title('Create Account')
 	newprofile_window.geometry('500x250+450+200')
 	newprofile_window.resizable(0,0)
 
@@ -80,7 +80,7 @@ def openNewProfile(pmaster):
 
 
 	profile_btn=Button(
-		newprofile_window, text='Create Profile', 
+		newprofile_window, text='Create Account', 
 		command=lambda: confirm_signup(newprofile_window, pmaster, bname, uname, pwd, cpwd), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=12

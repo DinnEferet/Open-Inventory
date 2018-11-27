@@ -30,7 +30,7 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
-	window.geometry('520x300+420+150')
+	window.geometry('520x300+390+190')
 	window.resizable(0,0)
 
 
@@ -42,7 +42,7 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 	title.place(relx=0.35, rely=0.03)
 
 	subtitle=Message(
-		window, text='*Type in new values for any account details you want to change (ignore the rest)', width=450, 
+		window, text='Type in new values for any account details you want to change (ignore the rest)', width=450, 
 		font=(common.fonts['common text'], 9, 'normal'), justify=CENTER, 
 		fg=common.colors['menu text']
 	)
@@ -50,7 +50,7 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 
 
 	new_bname_label=Label(
-		window, text='*New Business Name', font=(common.fonts['common text'], 10, 'normal'), 
+		window, text='New Business Name', font=(common.fonts['common text'], 10, 'normal'), 
 		fg=common.colors['menu text']
 	)
 	new_bname_label.place(relx=0.06, rely=0.25)
@@ -72,7 +72,7 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 
 
 	new_uname_label=Label(
-		window, text='*New Username', font=(common.fonts['common text'], 10, 'normal'), 
+		window, text='New Username', font=(common.fonts['common text'], 10, 'normal'), 
 		fg=common.colors['menu text']
 	)
 	new_uname_label.place(relx=0.06, rely=0.4)
@@ -94,7 +94,7 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 
 
 	new_pword_label=Label(
-		window, text='*New Password', font=(common.fonts['common text'], 10, 'normal'), 
+		window, text='New Password', font=(common.fonts['common text'], 10, 'normal'), 
 		fg=common.colors['menu text']
 	)
 	new_pword_label.place(relx=0.06, rely=0.55)
@@ -152,7 +152,7 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
-		confirm_window.geometry('430x140+480+250')
+		confirm_window.geometry('430x140+430+250')
 		confirm_window.resizable(0,0)
 
 

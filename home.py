@@ -76,7 +76,7 @@ class Home:
 		).place(relx=0.5, rely=0.2, anchor=CENTER)
 
 		Button( #new profile button
-			self.button_frame, text='New Bussiness Profile', command=lambda: signup.openNewProfile(self.master), 
+			self.button_frame, text='Create Account', command=lambda: signup.openNewProfile(self.master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=18
 		).place(relx=0.5, rely=0.4, anchor=CENTER)

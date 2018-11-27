@@ -24,11 +24,11 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 	if(inventory_has_items>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
-		window.geometry('400x150+500+270')
+		window.geometry('400x150+450+240')
 		window.resizable(0,0)
 
 		title=Message(
-			window, text='Delete Item', width=200, 
+			window, text='Remove Item From Stock', width=200, 
 			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text']
 		)
@@ -42,6 +42,13 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 		iname=StringVar()
 
+		subtitle2=Message(
+			window, text='(must be typed in full)', width=200, 
+			font=(common.fonts['common text'], 8, 'normal'), justify=CENTER, 
+			fg=common.colors['menu text']
+		)
+		subtitle2.place(relx=0.1, rely=0.42)
+
 		iname_input=Entry(
 			window, width=20, textvariable=iname, font=(common.fonts['common text'], 11, 'normal'),
 			fg=common.colors['menu text']
@@ -51,19 +58,19 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 
 		drop_item=Button(
-			window, text='Delete Item', 
+			window, text='Remove Item', 
 			command=lambda: confirmDropItem(window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=10
 		)
-		drop_item.place(relx=0.25, rely=0.6)
+		drop_item.place(relx=0.25, rely=0.64)
 
 		close=Button(
 			window, text='Cancel', command=lambda: ops.closeToplevel(window, master, master_master, True), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=10
 		)
-		close.place(relx=0.55, rely=0.6)
+		close.place(relx=0.55, rely=0.64)
 
 		window.focus_force()
 		window.grab_set()
@@ -96,7 +103,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 	if(item_exists>0):
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
-		confirm_window.geometry('400x100+500+300')
+		confirm_window.geometry('400x100+450+270')
 		confirm_window.resizable(0,0)
 
 

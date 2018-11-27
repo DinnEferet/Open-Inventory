@@ -97,14 +97,14 @@ class MyInventory:
 		).place(relx=0.15, rely=0.25)
 
 		Button( #edit existing item button
-			self.button_frame, text='Edit Item',
+			self.button_frame, text='Update Item',
 			command=lambda: edit.openEditItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname),
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
 		).place(relx=0.15, rely=0.4)
 
 		Button( #delete item button
-			self.button_frame, text='Delete Item', 
+			self.button_frame, text='Remove Item', 
 			command=lambda: drop.openDropItem(self.master, master, self.inventory_frame, self.stats_frame, user_uname, user_bname), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=13
@@ -113,8 +113,8 @@ class MyInventory:
 		Button( #logout button
 			self.button_frame, text='Logout', command=lambda: self.closeApp(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
-			font=(common.fonts['common text'], 10, 'normal'), width=13
-		).place(relx=0.15, rely=0.7)
+			font=(common.fonts['common text'], 10, 'normal'), width=9
+		).place(relx=0.25, rely=0.85)
 		
 
 		ops.populateInventory(user_uname, self.inventory_frame)	#populates inventory frame with items in user's inventory
