@@ -26,7 +26,7 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 * Matplotlib (data science)
 
 ### Lines of Code:
-* 2700+
+* 2800+
 
 ### Platform Dependencies:
 * **Hardware:** PC
