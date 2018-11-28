@@ -7,13 +7,7 @@
 
 #imports
 
-from Tkinter import * #modules for gui
-import Pmw #module for gui
-import re #module for matching regular expressions
-import os #module for interracting with host OS
-import webbrowser #module for opening links in user's browser
-import MySQLdb as sql #module for MySQL database connections
-import datetime as date #module for date
+from tkinter import * #modules for gui
 import common #python file with useful specifications
 import ops
 import login
@@ -58,8 +52,6 @@ class Home:
 		)
 
 		self.extras['menu']=self.extras.menu #binds menu items to menu button
-		
-		self.menu_frame.tk_menuBar(self.extras) #creates frame container for menu
 
 		common.Header(self.master_frame, 'Open Inventory') #calls instance of window header class
 

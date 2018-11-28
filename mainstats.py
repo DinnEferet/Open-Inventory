@@ -1,10 +1,8 @@
 #imports
 
-from Tkinter import * #modules for gui
+from tkinter import * #modules for gui
 import Pmw #module for gui
-import re #module for matching regular expressions
-import os #module for interracting with host OS
-import MySQLdb as sql #module for MySQL database connections
+import pymysql as sql #module for MySQL database connections
 import datetime as date #module for date
 import common #python file with useful specifications
 import ops
@@ -390,9 +388,8 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		Message( #message if user has no items in inventory 
 			window, text='No stats yet.', width=200,
 			font=(common.fonts['common text'], 12, 'normal'), justify=CENTER, 
-			fg=common.colors['menu text'],
-			bg=common.colors['info sheet']
-		).place(relx=0.3, rely=0.2)
+			fg=common.colors['menu text']
+		).place(relx=0.38, rely=0.2)
 
 
 	Button(

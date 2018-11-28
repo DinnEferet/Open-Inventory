@@ -1,11 +1,10 @@
 #imports
 
-from Tkinter import * #modules for gui
+from tkinter import * #modules for gui
 import Pmw #module for gui
-import re #module for matching regular expressions
 import os #module for interracting with host OS
 import webbrowser #module for opening links in user's browser
-import MySQLdb as sql #module for MySQL database connections
+import pymysql as sql #module for MySQL database connections
 import datetime as date #module for date
 import common #python file with useful specifications
 import inventory
@@ -237,8 +236,7 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 
 	about=Message(
 		about_window, text='Version 1.0'
-		'\n\n\nCopyright '+u'\u00a9'+' 2018 American University of Nigeria.'
-		'\nDeveloped by Ross Hart.'
+		'\n\n\nCopyright '+u'\u00a9'+' 2018 Ross Hart. All rights reserved'
 		'\n\nGNU General Public License v3.0.'
 		'\n\n\nOnline Repository:', 
 		font=(common.fonts['common text'], 10, 'bold'), width=400, justify=CENTER, 
@@ -260,7 +258,7 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 		font=(common.fonts['common text'], 10, 'normal'), width=10
 	)
-	close.place(relx=0.5, rely=0.85, anchor=CENTER)
+	close.place(relx=0.5, rely=0.86, anchor=CENTER)
 
 
 	about_window.focus_force()
@@ -666,7 +664,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 			font=(common.fonts['common text'], 10, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
-		).place(relx=0.3, rely=0.2)
+		).place(relx=0.35, rely=0.2)
 
 
 	stats_footer=Frame( #statistics frame for inventory

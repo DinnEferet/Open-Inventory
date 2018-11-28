@@ -1,12 +1,6 @@
 #imports
 
-from Tkinter import * #modules for gui
-import Pmw #module for gui
-import re #module for matching regular expressions
-import os #module for interracting with host OS
-import webbrowser #module for opening links in user's browser
-import MySQLdb as sql #module for MySQL database connections
-import datetime as date #module for date
+from tkinter import * #modules for gui
 import common #python file with useful specifications
 import add
 import edit
@@ -57,8 +51,6 @@ class MyInventory:
 		)
 
 		self.extras['menu']=self.extras.menu #binds menu items to menu button
-		
-		self.menu_frame.tk_menuBar(self.extras) #binds menu frame to menu button
 
 
 		common.Header(self.master, user_bname+" Inventory")
@@ -114,7 +106,7 @@ class MyInventory:
 			self.button_frame, text='Logout', command=lambda: self.closeApp(), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 			font=(common.fonts['common text'], 10, 'normal'), width=9
-		).place(relx=0.25, rely=0.85)
+		).place(relx=0.25, rely=0.8)
 		
 
 		ops.populateInventory(user_uname, self.inventory_frame)	#populates inventory frame with items in user's inventory

@@ -1,11 +1,7 @@
 #imports
 
-from Tkinter import * #modules for gui
-import Pmw #module for gui
-import re #module for matching regular expressions
-import os #module for interracting with host OS
-import MySQLdb as sql #module for MySQL database connections
-import datetime as date #module for date
+from tkinter import * #modules for gui
+import pymysql as sql #module for MySQL database connections
 import common #python file with useful specifications
 import ops
 
@@ -81,7 +77,7 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 		window.mainloop()
 	else:
-		ops.openAlert(master, master_master, 'You have no items to delete!', 'Okay', True)
+		ops.openAlert(master, master_master, 'You have no items to remove!', 'Okay', True)
 
 
 def confirmDropItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
@@ -152,6 +148,12 @@ def dropItem(confirm_window, add_window, master, master_master, inventory_frame,
 
 	cmd=query.execute(
 		"""DELETE FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+	)
+
+	save=query.execute("""COMMIT""")
+
+	cmd=query.execute(
+		"""DELETE FROM %s_sales WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
 
 	save=query.execute("""COMMIT""")

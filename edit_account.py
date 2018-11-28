@@ -1,10 +1,7 @@
 #imports
 
-from Tkinter import * #modules for gui
-import Pmw #module for gui
-import os #module for interracting with host OS
-import MySQLdb as sql #module for MySQL database connections
-import datetime as date #module for date
+from tkinter import * #modules for gui
+import pymysql as sql #module for MySQL database connections
 import common #python file with useful specifications
 import ops
 

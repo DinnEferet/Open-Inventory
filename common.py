@@ -7,9 +7,7 @@
 
 #imports
 
-from Tkinter import * #modules for gui
-import Pmw #module for gui
-
+from tkinter import * #modules for gui
 
 #Classes 
 
@@ -39,7 +37,7 @@ class Footer:
 		self.footer_frame.pack(fill=X, side=BOTTOM) #positions frame
 
 		self.footer=Label( #label for footer; text is Copyright info
-			self.footer_frame, text='Copyright '+u'\u00a9'+' 2018 American University of Nigeria.', 
+			self.footer_frame, text='Copyright '+u'\u00a9'+' 2018 Ross Hart. All rights reserved', 
 			font=(fonts['common text'], 10, 'normal'), fg=colors['footer text'], 
 			bg=colors['footer'], pady=40
 		)

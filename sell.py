@@ -1,10 +1,9 @@
 #imports
 
-from Tkinter import * #modules for gui
+from tkinter import * #modules for gui
 import Pmw #module for gui
 import re #module for matching regular expressions
-import os #module for interracting with host OS
-import MySQLdb as sql #module for MySQL database connections
+import pymysql as sql #module for MySQL database connections
 import datetime as date #module for date
 import common #python file with useful specifications
 import ops
