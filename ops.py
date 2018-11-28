@@ -679,4 +679,3 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 		font=(common.fonts['common text'], 9, 'normal'), width=15
 	).place(relx=0.3, rely=0.1)
-
