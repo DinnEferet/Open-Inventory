@@ -17,13 +17,13 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 * MySQL (database)
 
 ### Modules/Extensions:
-* Tkinter (GUI)
-* Pmw (GUI)
+* tkinter (GUI)
+* pmw (GUI)
 * webbrowser (link to GitHub)
 * re (regular expressions)
-* MySQLdb (database connectivity)
+* PyMySQL (database connectivity)
 * pandas (data science)
-* Matplotlib (data science)
+* matplotlib (data science)
 
 ### Lines of Code:
 * 2800+
