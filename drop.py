@@ -1,15 +1,22 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import pymysql as sql #module for MySQL database connections
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script contaning item deletion feature.
+'''
+
+from tkinter import *
+import sqlite3 as sql
+import common
 import ops
 
-#inventory item deletion methods
+
 def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
@@ -17,7 +24,9 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 		"""SELECT * FROM %s_items""" % (user_uname.lower())
 	)
 
-	if(inventory_has_items>0):
+	fetch=query.fetchall()
+
+	if(len(fetch)>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
 		window.geometry('400x150+450+240')
@@ -86,17 +95,17 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 	if(p1==''):
 		ops.xopenAlert(add_window, master, master_master, 'Please enter an item name!', 'Okay')
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	item_exists=query.execute(
-		"""SELECT * FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), p1)
+		"""SELECT * FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), p1)
 	)
 
-	if(item_exists>0):
+	fetch=query.fetchall()
+
+	if(len(fetch)>0):
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
 		confirm_window.geometry('400x100+450+270')
@@ -111,7 +120,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 		msg.place(relx=0.5, rely=0.1, anchor=N)
 
 		yep=Button(
-			confirm_window, text='Yes! Delete it!', 
+			confirm_window, text='Yes, delete it!', 
 			command=lambda: dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, p1), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -119,7 +128,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 		yep.place(relx=0.3, rely=0.7, anchor=CENTER)
 
 		nope=Button(
-			confirm_window, text='No! Take Me Back!', 
+			confirm_window, text='No, take me back!', 
 			command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -140,23 +149,19 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 
 
 def dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	cmd=query.execute(
-		"""DELETE FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+		"""DELETE FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
-
-	save=query.execute("""COMMIT""")
 
 	cmd=query.execute(
-		"""DELETE FROM %s_sales WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+		"""DELETE FROM %s_sales WHERE `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
 
-	save=query.execute("""COMMIT""")
+	db.commit()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

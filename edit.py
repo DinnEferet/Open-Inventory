@@ -1,34 +1,40 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import Pmw #module for gui
-import re #module for matching regular expressions
-import pymysql as sql #module for MySQL database connections
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing item update feature.
+'''
+
+from tkinter import *
+import Pmw
+import re
+import sqlite3 as sql
+import common
 import ops
 
 
 def openEditItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	item_list=()
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 		
 	inventory_has_items=query.execute(
-		"""SELECT * FROM %s_items""" % (user_uname.lower())
+		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
 	
+	inventory_items=query.fetchall()
 
-	if(inventory_has_items>0):
+	if(len(inventory_items)>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
 		window.geometry('520x250+400+200')
 		window.resizable(0,0)
-
-		inventory_items=query.fetchall()
 
 		title=Message(
 			window, text='Update Item', width=200, 
@@ -147,9 +153,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 	p4=iqty.get()
 	p5=iprice.get()
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
@@ -172,10 +176,12 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 
 	if(p3!='' or p4!='' or p5!=''):
 		cmd=query.execute(
-			"""SELECT `item_name` FROM `%s_items` WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), old_iname)
+			"""SELECT `item_name` FROM `%s_items` WHERE `item_name`='%s'""" % (user_uname.lower(), old_iname)
 		)
 
-		if(cmd>0):
+		fetch=query.fetchall()
+
+		if(len(fetch)>0):
 			confirm_window=Toplevel(master_master)
 			confirm_window.title('')
 			confirm_window.geometry('400x100+460+290')
@@ -190,7 +196,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 			msg.place(relx=0.5, rely=0.1, anchor=N)
 
 			yep=Button(
-				confirm_window, text='Yes! Save My Edits!', 
+				confirm_window, text='Yes, save my edit!', 
 				command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, p3, p4, p5), 
 				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 				font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -198,7 +204,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 			yep.place(relx=0.3, rely=0.7, anchor=CENTER)
 
 			nope=Button(
-				confirm_window, text='No! Take Me Back!', 
+				confirm_window, text='No, take me back!', 
 				command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
 				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 				font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -220,16 +226,14 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 
 
 def editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, old_iname, iname, iqty, iprice):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 
 	if(iqty!=''):
 		cmd=query.execute(
-			"""SELECT `quantity` FROM `%s_items` WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), old_iname)
+			"""SELECT `quantity` FROM `%s_items` WHERE `item_name`='%s'""" % (user_uname.lower(), old_iname)
 		)
 
 		stock=query.fetchall()
@@ -237,27 +241,23 @@ def editItem(confirm_window, add_window, master, master_master, inventory_frame,
 		new_stock=int((stock[0])[0])+int(iqty)
 
 		cmd=query.execute(
-			"""UPDATE `%s_items` SET `quantity`=%d WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), new_stock, old_iname)
+			"""UPDATE `%s_items` SET `quantity`=%d WHERE `item_name`='%s'""" % (user_uname.lower(), new_stock, old_iname)
 		)
-
-		save=query.execute("""COMMIT""")
 
 
 	if(iprice!=''):
 		cmd=query.execute(
-			"""UPDATE `%s_items` SET `price`=%f WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), float(iprice), old_iname)
+			"""UPDATE `%s_items` SET `price`=%f WHERE `item_name`='%s'""" % (user_uname.lower(), float(iprice), old_iname)
 		)
-
-		save=query.execute("""COMMIT""")
 
 
 	if(iname!=''):
 		cmd=query.execute(
-			"""UPDATE `%s_items` SET `item_name`='%s' WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname, old_iname)
+			"""UPDATE `%s_items` SET `item_name`='%s' WHERE `item_name`='%s'""" % (user_uname.lower(), iname, old_iname)
 		)
 
-		save=query.execute("""COMMIT""")
 
+	db.commit()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

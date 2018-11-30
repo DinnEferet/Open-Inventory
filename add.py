@@ -1,13 +1,22 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import re #module for matching regular expressions
-import pymysql as sql #module for MySQL database connections
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing item addition feature.
+'''
+
+from tkinter import *
+import re
+import sqlite3 as sql
+import common
 import ops
 
 
-#inventory item addition methods
+
 def openAddItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
@@ -110,17 +119,17 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 	if(not match_p):
 		ops.xopenAlert(add_window, master, master_master, 'Price must be a number!', 'Okay')
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	item_exists=query.execute(
-		"""SELECT * FROM %s_items WHERE BINARY `item_name`='%s'""" % (p1.lower(), p2)
+		"""SELECT * FROM %s_items WHERE `item_name`='%s'""" % (p1.lower(), p2)
 	)
 
-	if(item_exists>0):
+	fetch=query.fetchall()
+
+	if(len(fetch)>0):
 		ops.xopenAlert(add_window, master, master_master, 'Item with that name already exits! \nPlease choose another name.', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
@@ -137,7 +146,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 		msg.place(relx=0.5, rely=0.1, anchor=N)
 
 		yep=Button(
-			confirm_window, text='Yes! Add My Item!', 
+			confirm_window, text='Yes, add my item!', 
 			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, p3, p4), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -145,7 +154,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 		yep.place(relx=0.3, rely=0.7, anchor=CENTER)
 
 		nope=Button(
-			confirm_window, text='No! Take Me Back!', 
+			confirm_window, text='No, take me back!', 
 			command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -164,9 +173,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 
 
 def addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname,  user_bname, iname, iqty, iprice):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
@@ -174,7 +181,7 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 		"""INSERT INTO %s_items VALUES ('%s', %d, %f)""" % (user_uname.lower(), iname, int(iqty), float(iprice))
 	)
 
-	save=query.execute("""COMMIT""")
+	db.commit()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

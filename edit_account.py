@@ -1,15 +1,22 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import pymysql as sql #module for MySQL database connections
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing user account editing feature.
+'''
+
+from tkinter import *
+import sqlite3 as sql
+import common
 import ops
 
 
 def openEditAccount(master, master_master, user_uname, user_bname):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
@@ -168,7 +175,7 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 		msg2.place(relx=0.5, rely=0.3, anchor=N)
 
 		yep=Button(
-			confirm_window, text='Yes! I\'m Sure!', 
+			confirm_window, text='Yes, I\'m sure!', 
 			command=lambda: editAccount(confirm_window, add_window, master, master_master, p1, p2, p3, p4), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -176,7 +183,7 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 		yep.place(relx=0.3, rely=0.75, anchor=CENTER)
 
 		nope=Button(
-			confirm_window, text='No! Take Me Back!', 
+			confirm_window, text='No, take me back!', 
 			command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -195,39 +202,35 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 
 
 def editAccount(confirm_window, add_window, master, master_master, user_uname, new_bname, new_uname, new_pword):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	if(new_bname!=''):
 		cmd=query.execute(
-			"""UPDATE user_accounts SET `bname`='%s' WHERE BINARY `uname`='%s'""" % (new_bname, user_uname)
+			"""UPDATE user_accounts SET `bname`='%s' WHERE `uname`='%s'""" % (new_bname, user_uname)
 		)
 
-		save=query.execute("""COMMIT""")
 
 	if(new_pword!=''):
 		cmd=query.execute(
-			"""UPDATE user_accounts SET `pword`='%s' WHERE BINARY `uname`='%s'""" % (new_pword, user_uname)
+			"""UPDATE user_accounts SET `pword`='%s' WHERE `uname`='%s'""" % (new_pword, user_uname)
 		)
-
-		save=query.execute("""COMMIT""")
 
 	if(new_uname!=''):
 		cmd=query.execute(
-			"""UPDATE user_accounts SET `uname`='%s' WHERE BINARY `uname`='%s'""" % (new_uname, user_uname)
+			"""UPDATE user_accounts SET `uname`='%s' WHERE `uname`='%s'""" % (new_uname, user_uname)
 		)
-
-		save=query.execute("""COMMIT""")
 
 		cmd2=query.execute(
-			"""RENAME TABLE %s_items TO %s_items, %s_sales TO %s_sales""" % (user_uname.lower(), new_uname.lower(), user_uname.lower(), new_uname.lower())
+			"""ALTER TABLE %s_sales RENAME TO %s_sales""" % (user_uname.lower(), new_uname.lower())
 		)
 
-		save2=query.execute("""COMMIT""")
+		cmd3=query.execute(
+			"""ALTER TABLE %s_items RENAME TO %s_items""" % (user_uname.lower(), new_uname.lower())
+		)
 
+	db.commit()
 
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)

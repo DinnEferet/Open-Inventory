@@ -1,10 +1,19 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import Pmw #module for gui
-import pymysql as sql #module for MySQL database connections
-import datetime as date #module for date
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing comprehensive inventory statistics feature.
+'''
+
+from tkinter import *
+import Pmw
+import sqlite3 as sql
+import datetime as date
+import common
 import ops
 import pandas as pd
 import numpy as np
@@ -16,7 +25,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
 
 
-#inventory item addition methods
+
 def openMainStats(master, master_master, user_uname, user_bname):
 	window=Toplevel(master_master)
 	window.title(user_bname+' Inventory')
@@ -28,34 +37,32 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		fg=common.colors['menu text'],
 	).place(relx=0.42, rely=0.02)
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
-	query=db.cursor() #creates cursor for query
+	query=db.cursor()
 
-	inventory_sales=query.execute( #gets all items in user inventory in alphabetical order
+	inventory_sales=query.execute(
 		"""SELECT * FROM %s_sales ORDER BY item_name ASC""" % (user_uname.lower())
 	)
-	sales=query.fetchall() #gets rows from table
+	sales=query.fetchall()
 
-	if(inventory_sales>0):
-		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
+	if(len(sales)>0):
+		data_pane=Pmw.ScrolledCanvas(
 			window, hull_width=390, hull_height=410, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
-		data_container=data_pane.interior() #initializes interior of canvas
+		data_container=data_pane.interior()
 
 		data_container.configure(bg=common.colors['info sheet'])
 
 		get_sale_dates=query.execute(
-			"""SELECT MONTHNAME(date_of_sale) FROM %s_sales WHERE YEAR(date_of_sale)=YEAR(CURRENT_DATE()) GROUP BY MONTH(date_of_sale)""" % (user_uname.lower())
+			"""SELECT case strftime('%s', date_of_sale) when '01' then 'Jan' when '02' then 'Feb' when '03' then 'Mar' when '04' then 'Apr' when '05' then 'May' when '06' then 'Jun' when '07' then 'Jul' when '08' then 'Aug' when '09' then 'Sept' when '10' then 'Oct' when '11' then 'Nov' when '12' then 'Dec' else '' end FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY strftime('%s', date_of_sale)""" % (str('%m'), user_uname.lower(), str('%Y'), str('%Y'), str('%m'))
 		)
 		sale_dates=query.fetchall()
 
 		get_sale_counts=query.execute(
-			"""SELECT count(item_name) FROM %s_sales WHERE YEAR(date_of_sale)=YEAR(CURRENT_DATE()) GROUP BY MONTH(date_of_sale)""" % (user_uname.lower())
+			"""SELECT count(item_name) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY strftime('%s', date_of_sale)""" % (user_uname.lower(), str('%Y'), str('%Y'), str('%m'))
 		)
 		sale_counts=query.fetchall()
 
@@ -105,7 +112,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
 
-		sales_frame=Frame( #frame for item row
+		sales_frame=Frame(
 			data_container, width=400, height=340, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
@@ -118,12 +125,12 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		data_pane.create_window(384, 0, window=sales_frame)
 
 		get_sale_dates_2=query.execute(
-			"""SELECT YEAR(date_of_sale) FROM %s_sales GROUP BY YEAR(date_of_sale)""" % (user_uname.lower())
+			"""SELECT strftime('%s', date_of_sale) FROM %s_sales GROUP BY strftime('%s', date_of_sale)""" % (str('%Y'), user_uname.lower(), str('%Y'))
 		)
 		sale_dates_2=query.fetchall()
 
 		get_sale_counts_2=query.execute(
-			"""SELECT count(item_name) FROM %s_sales GROUP BY YEAR(date_of_sale)""" % (user_uname.lower())
+			"""SELECT count(item_name) FROM %s_sales GROUP BY strftime('%s', date_of_sale)""" % (user_uname.lower(), str('%Y'))
 		)
 		sale_counts_2=query.fetchall()
 
@@ -173,7 +180,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
 
-		sales_frame_2=Frame( #frame for item row
+		sales_frame_2=Frame(
 			data_container, width=400, height=340, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
@@ -185,7 +192,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 
 		data_pane.create_window(384, 250, window=sales_frame_2)
 
-		other_stats_frame=Frame( #frame for item row
+		other_stats_frame=Frame(
 			data_container, width=400, height=300, borderwidth=0, 
 			bg=common.colors['info sheet']
 		)
@@ -298,7 +305,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 
 		data_pane.create_window(384, 540, window=other_stats_frame)
 
-		other_stats_frame_2=Frame( #frame for item row
+		other_stats_frame_2=Frame(
 			data_container, width=394, height=60, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
@@ -355,7 +362,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			i=0.9
 
 			for suggestion in suggestions:
-				suggestion_frame=Frame( #frame for item row
+				suggestion_frame=Frame(
 					data_container, width=394, height=30, borderwidth=0,
 					bg=common.colors['info sheet']
 				)
@@ -381,11 +388,11 @@ def openMainStats(master, master_master, user_uname, user_bname):
 
 		
 
-		data_pane.place(relx=0.01, rely=0.08) #positions scrollable canvas
+		data_pane.place(relx=0.01, rely=0.08)
 		data_pane.yview('scroll', -200, 'pages')
 		data_pane.resizescrollregion()
 	else:
-		Message( #message if user has no items in inventory 
+		Message(
 			window, text='No stats yet.', width=200,
 			font=(common.fonts['common text'], 12, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text']

@@ -1,29 +1,38 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import Pmw #module for gui
-import re #module for matching regular expressions
-import pymysql as sql #module for MySQL database connections
-import datetime as date #module for date
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing item sales feature.
+'''
+
+from tkinter import * 
+import Pmw 
+import re 
+import sqlite3 as sql 
+import datetime as date 
+import common
 import ops
 
 
-#inventory item sale methods
+
 def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
 	item_list=()
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	inventory_has_items=query.execute(
-		"""SELECT * FROM %s_items""" % (user_uname.lower())
+		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
 
-	if(inventory_has_items>0):
+	inventory_items=query.fetchall()
+
+	if(len(inventory_items)>0):
 		window=Toplevel(master_master)
 		window.title(user_bname+' Inventory')
 		window.geometry('500x200+400+220')
@@ -42,7 +51,6 @@ def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname
 		)
 		iname_label.place(relx=0.03, rely=0.2)
 
-		inventory_items=query.fetchall()
 
 		for inventory_item in inventory_items:
 			item_list+=(str(inventory_item[0]),)
@@ -118,18 +126,17 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 		ops.xopenAlert(add_window, master, master_master, 'Quantity must be a number!', 'Okay')
 	
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	fetch_item=query.execute(
-		"""SELECT quantity FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+		"""SELECT quantity FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
 
-	if(fetch_item>0):
-		item=query.fetchall()
+	item=query.fetchall()
+
+	if(len(item)>0):
 
 		stored_iqty=(item[0])[0]
 
@@ -148,7 +155,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 
 
 			get_price=query.execute(
-				"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+				"""SELECT `price` FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), iname)
 			)
 			price=query.fetchall()
 
@@ -163,7 +170,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 			msg.place(relx=0.5, rely=0.1, anchor=N)
 
 			yep=Button(
-				confirm_window, text='Yes! Sell This Item!', 
+				confirm_window, text='Yes, sell this item!', 
 				command=lambda: sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, int(stored_iqty), int(p3)), 
 				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 				font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -171,7 +178,7 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 			yep.place(relx=0.3, rely=0.75, anchor=CENTER)
 
 			nope=Button(
-				confirm_window, text='No! Take Me Back!', 
+				confirm_window, text='No, take me back!', 
 				command=lambda: ops.xcloseToplevel(confirm_window, add_window, master, master_master), 
 				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 				font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -193,15 +200,13 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 
 
 def sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, stored_iqty, sold_iqty):
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 
 	get_price=query.execute(
-		"""SELECT `price` FROM %s_items WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), iname)
+		"""SELECT `price` FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), iname)
 	)
 	price=query.fetchall()
 
@@ -209,15 +214,15 @@ def sellItem(confirm_window, add_window, master, master_master, inventory_frame,
 
 
 	record_sale=query.execute(
-		"""INSERT INTO %s_sales VALUES ('%s', %d, %f, '%s')""" % (user_uname.lower(), iname, sold_iqty, amount_due, date.datetime.now().strftime('%Y/%m/%d'))
+		"""INSERT INTO %s_sales VALUES ('%s', %d, %f, '%s')""" % (user_uname.lower(), iname, sold_iqty, amount_due, date.datetime.now().strftime('%Y-%m-%d'))
 	)
 
 	sell_item=query.execute(
-		"""UPDATE %s_items SET quantity=%d WHERE BINARY `item_name`='%s'""" % (user_uname.lower(), (int(stored_iqty)-int(sold_iqty)), iname)
+		"""UPDATE %s_items SET quantity=%d WHERE `item_name`='%s'""" % (user_uname.lower(), (int(stored_iqty)-int(sold_iqty)), iname)
 	)
 
 
-	save=query.execute("""COMMIT""")
+	db.commit()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

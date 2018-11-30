@@ -1,12 +1,21 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import Pmw #module for gui
-import os #module for interracting with host OS
-import webbrowser #module for opening links in user's browser
-import pymysql as sql #module for MySQL database connections
-import datetime as date #module for date
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing the bulk of application features and helper methods.
+'''
+
+from tkinter import *
+import Pmw
+import os
+import webbrowser
+import sqlite3 as sql
+import datetime as date
+import common 
 import inventory
 import pandas as pd
 import numpy as np
@@ -19,93 +28,90 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
 
 
-#inventory population method
 def populateInventory(user_uname, inventory_frame):
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
-	query=db.cursor() #creates cursor for query
+	query=db.cursor()
 
-	inventory_items=query.execute( #gets all items in user inventory in alphabetical order
+	inventory_items=query.execute(
 		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
-	inventory=query.fetchall() #gets rows from table
+	inventory=query.fetchall()
 
-	if(inventory_items>0):
-		columns_frame=Frame( #container frame for user inventory heading
+	if(len(inventory)>0):
+		columns_frame=Frame(
 			inventory_frame, width=516, height=30, borderwidth=2, relief=RAISED, 
 			bg=common.colors['menu']
 		)
 		columns_frame.place(relx=0.0, rely=0.0)
 
-		Label( #title label for item name
+		Label(
 			columns_frame, text='Item Name', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=25,
 			borderwidth=2, relief=GROOVE
 		).place(relx=0.02, rely=0.16)
 
-		Label( #title label for item quantity 
+		Label(
 			columns_frame, text='Quantity Available', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
 			borderwidth=2, relief=GROOVE
 		).place(relx=0.4, rely=0.16)
 
-		Label( #title label for item price
+		Label(
 			columns_frame, text='Price per Unit', font=(common.fonts['common text'], 10, 'normal'),
 			fg=common.colors['header text'], bg=common.colors['outer'], width=20,
 			borderwidth=2, relief=GROOVE
 		).place(relx=0.7, rely=0.16)
 
-		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
+		data_pane=Pmw.ScrolledCanvas(
 			inventory_frame, hull_width=519, hull_height=270, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
-		data_container=data_pane.interior() #initializes interior of canvas
+		data_container=data_pane.interior()
 
 		data_container.configure(bg=common.colors['inventory'])
 
 		i=0.01
 		j=10
 		for row in inventory:
-			data_frame=Frame( #frame for item row
+			data_frame=Frame(
 				data_container, width=519, height=28, borderwidth=2, relief=GROOVE, 
 				bg=common.colors['inventory']
 			)
 			data_frame.place(relx=0.0, rely=i)
 
-			Label( #label for item name
+			Label(
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.02, rely=0.1)
 
-			Label( #label for item quantiy 
+			Label( 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.4, rely=0.1)
 
-			Label( #label for item price
+			Label(
 				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
 
-			data_pane.create_window(300, j, window=data_frame) #binds frame to canvas
+			data_pane.create_window(300, j, window=data_frame)
 			i+=0.05
 			j+=30
 
-		data_pane.place(relx=0.0, rely=0.1) #positions scrollable canvas
+		data_pane.place(relx=0.0, rely=0.1)
 		data_pane.yview('scroll', -10, 'pages')
-		data_pane.resizescrollregion() #activates scrolling when items exceed canvas size
+		data_pane.resizescrollregion()
 	else:
 		for widget in inventory_frame.winfo_children():
 			widget.destroy()
 
-		Message( #message if user has no items in inventory 
+		Message( 
 			inventory_frame, text='You have nothing in your inventory.', width=350,
 			font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text'],
@@ -114,71 +120,69 @@ def populateInventory(user_uname, inventory_frame):
 
 def searchInventory(master, master_master, user_uname, inventory_frame, srch_item):
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
-	query=db.cursor() #creates cursor for query
+	query=db.cursor()
 
 
-	inventory_items=query.execute( #gets all items in user inventory in alphabetical order
+	inventory_items=query.execute(
 		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
-	inventory=query.fetchall() #gets rows from table
+	inventory=query.fetchall()
 
 
-	inventory_items_searched=query.execute( #gets all items in user inventory in alphabetical order
-		"""SELECT * FROM %s_items WHERE LOCATE('%s', item_name) ORDER BY item_name ASC""" % (user_uname.lower(), srch_item.get().strip())
+	inventory_items_searched=query.execute(
+		"""SELECT * FROM %s_items WHERE item_name LIKE '%s' ORDER BY item_name ASC""" % (user_uname.lower(), str("%"+srch_item.get().strip()+"%"))
 	)
-	searched_inventory=query.fetchall() #gets rows from table
+	searched_inventory=query.fetchall()
 
 
-	if(inventory_items_searched>0 and inventory_items>0):
-		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
+	if(len(searched_inventory)>0 and len(inventory)>0):
+		data_pane=Pmw.ScrolledCanvas(
 			inventory_frame, hull_width=519, hull_height=270, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
-		data_container=data_pane.interior() #initializes interior of canvas
+		data_container=data_pane.interior()
 
 		data_container.configure(bg=common.colors['inventory'])
 
 		i=0.01
 		j=10
 		for row in searched_inventory:
-			data_frame=Frame( #frame for item row
+			data_frame=Frame(
 				data_container, width=519, height=28, borderwidth=2, relief=GROOVE, 
 				bg=common.colors['inventory']
 			)
 			data_frame.place(relx=0.0, rely=i)
 
-			Label( #label for item name
+			Label(
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.02, rely=0.1)
 
-			Label( #label for item quantiy 
+			Label( 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.4, rely=0.1)
 
-			Label( #label for item price
+			Label(
 				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
 				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
 			).place(relx=0.7, rely=0.1)
 
-			data_pane.create_window(300, j, window=data_frame) #binds frame to canvas
+			data_pane.create_window(300, j, window=data_frame)
 			i+=0.05
 			j+=30
 
-		data_pane.place(relx=0.0, rely=0.1) #positions scrollable canvas
-		data_pane.resizescrollregion() #activates scrolling when items exceed canvas size
+		data_pane.place(relx=0.0, rely=0.1)
+		data_pane.resizescrollregion()
 	else:
-		if(not(inventory_items>0)):
-			Message( #message if user has no items in inventory 
+		if(not(len(inventory)>0)):
+			Message(
 				inventory_frame, text='You have nothing in your inventory.', width=350,
 				font=(common.fonts['common text'], 13, 'normal'), justify=CENTER, 
 				fg=common.colors['menu text'],
@@ -213,11 +217,11 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 
 			alert_window.mainloop()
 
-#Inventory window instaniation method
+
 def openInventory(imaster, user_uname, user_bname):
 	inv=inventory.MyInventory(imaster, user_uname, user_bname)
 
-#about Open Inventory window method
+
 def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 	if(abtmaster_master==None):
 		about_window=Toplevel(abtmaster)
@@ -270,7 +274,7 @@ def openAbout(abtmaster, abtmaster_master, master_is_inventory):
 
 	about_window.mainloop()
 
-#toplevel window closing method
+
 def closeToplevel(victim, vmaster, vmaster_master, vmaster_is_inventory):
 	if(vmaster_is_inventory==True):
 		vmaster.protocol('WM_DELETE_WINDOW', lambda: restoreInventoryDefaultClose(vmaster, vmaster_master))
@@ -290,7 +294,7 @@ def xcloseToplevel(victim, vmaster, vmaster_master, vmaster_master_master):
 	
 	victim.destroy()
 
-#alert message window method; opens aller with speficied message
+
 def openAlert(master, master_master, message, leave, master_is_inventory):
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
@@ -320,7 +324,7 @@ def openAlert(master, master_master, message, leave, master_is_inventory):
 
 	alert_window.mainloop()
 
-#hack; ensures that toplevel windows one level above the login/sign-up alerts behave properly 
+
 def xopenAlert(add_window, master, master_master, message, leave):
 	alert_window=Toplevel(master_master)
 	alert_window.title('')
@@ -351,18 +355,18 @@ def xopenAlert(add_window, master, master_master, message, leave):
 
 	alert_window.mainloop()
 
-#hack; restores default closing behavior of Inventory window
+#hack; restores default exit behavior of Inventory window
 def restoreInventoryDefaultClose(victim, vmaster):
 	closeToplevel(victim, vmaster, None, False)
 	vmaster.geometry('800x500+300+100')
 	vmaster.deiconify()
 
-#method for opening GitHub for Open Inventoy 1.0
+
 def toGitHub(event):
-	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory") #opens Open Inventory GitHub repository in user's browser
+	webbrowser.open_new(r"https://github.com/DinnEferet/Open-Inventory")
 
 def showStats(master, master_master, stats_frame, user_uname, user_bname):
-	stats_header=Frame( #statistics frame for inventory
+	stats_header=Frame(
 		stats_frame, width=256, height=33, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 	)
 	stats_header.place(relx=0, rely=0)
@@ -372,34 +376,32 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 		fg=common.colors['menu text'], bg=common.colors['outer']
 	).place(relx=0.35, rely=0.01)
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
-	query=db.cursor() #creates cursor for query
+	query=db.cursor()
 
-	inventory_sales=query.execute( #gets all items in user inventory in alphabetical order
+	inventory_sales=query.execute(
 		"""SELECT * FROM %s_sales ORDER BY item_name ASC""" % (user_uname.lower())
 	)
-	sales=query.fetchall() #gets rows from table
+	sales=query.fetchall()
 
-	if(inventory_sales>0):
-		data_pane=Pmw.ScrolledCanvas( #scrollable canvas for inventory items
+	if(len(sales)>0):
+		data_pane=Pmw.ScrolledCanvas(
 			stats_frame, hull_width=256, hull_height=310, usehullsize=1, borderframe=1,
 			vscrollmode='dynamic', hscrollmode='none'
 		)
 
-		data_container=data_pane.interior() #initializes interior of canvas
+		data_container=data_pane.interior()
 
 		data_container.configure(bg=common.colors['info sheet'])
 
 		get_sale_dates=query.execute(
-			"""SELECT DATE_FORMAT(date_of_sale, '%s') FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (str.format('%d-%m-%Y'), user_uname.lower())
+			"""SELECT date_of_sale FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%Y'), str('%Y'))
 		)
 		sale_dates=query.fetchall()
 
 		get_sale_counts=query.execute(
-			"""SELECT count(item_name) FROM %s_sales WHERE yearweek(date_of_sale) = yearweek(now()) GROUP BY date_of_sale""" % (user_uname.lower())
+			"""SELECT count(item_name) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%Y'), str('%Y'))
 		)
 		sale_counts=query.fetchall()
 
@@ -449,7 +451,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 			a.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
 
-		sales_frame=Frame( #frame for item row
+		sales_frame=Frame(
 			data_container, width=240, height=240, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
@@ -461,13 +463,13 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 
 		data_pane.create_window(240, 0, window=sales_frame)
 
-		other_stats_frame=Frame( #frame for item row
+		other_stats_frame=Frame(
 			data_container, width=240, height=220, borderwidth=0, 
 			bg=common.colors['info sheet']
 		)
 		other_stats_frame.place(relx=0.09, rely=0.5)
 
-		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW())" % (user_uname.lower()), con=db, index_col=None)
+		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now'))" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
 
 		if(week_revenue.to_string(index=False, justify='left', header=False)=='None'):
 			Message(
@@ -502,7 +504,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.1)
 
-		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
 
 		if(most_sold_item.empty):
 			Message(
@@ -537,7 +539,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.3)
 
-		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE YEARWEEK(date_of_sale) = YEARWEEK(NOW()) GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
 
 		if(least_sold_item.empty or least_sold_item.to_string(index=False, justify='left', header=False)==most_sold_item.to_string(index=False, justify='left', header=False)):
 			Message( 
@@ -574,7 +576,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 
 		data_pane.create_window(240, 200, window=other_stats_frame)
 
-		other_stats_frame_x=Frame( #frame for item row
+		other_stats_frame_x=Frame(
 			data_container, width=240, height=50, borderwidth=0,
 			bg=common.colors['info sheet']
 		)
@@ -631,7 +633,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 			i=0.9
 
 			for suggestion in suggestions:
-				suggestion_frame=Frame( #frame for item row
+				suggestion_frame=Frame(
 					data_container, width=240, height=20, borderwidth=0,
 					bg=common.colors['info sheet']
 				)
@@ -655,11 +657,11 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 				i+=0.03
 
 
-		data_pane.place(relx=0.0, rely=0.08) #positions scrollable canvas
+		data_pane.place(relx=0.0, rely=0.08)
 		data_pane.yview('scroll', -150, 'pages')
 		data_pane.resizescrollregion()
 	else:
-		Message( #message if user has no items in inventory 
+		Message( 
 			stats_frame, text='No stats yet.', width=100,
 			font=(common.fonts['common text'], 10, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text'],
@@ -667,12 +669,12 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 		).place(relx=0.35, rely=0.2)
 
 
-	stats_footer=Frame( #statistics frame for inventory
+	stats_footer=Frame(
 		stats_frame, width=256, height=36, borderwidth=2, relief=GROOVE, bg=common.colors['outer']
 	)
 	stats_footer.place(relx=0, rely=0.91)
 
-	Button( #logout button
+	Button(
 		stats_footer, text='More Stats', command=lambda: mainstats.openMainStats(master, master_master, user_uname, user_bname), 
 		bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED,
 		font=(common.fonts['common text'], 9, 'normal'), width=15

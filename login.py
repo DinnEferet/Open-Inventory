@@ -1,12 +1,21 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import pymysql as sql #module for MySQL database connections
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing login feature.
+'''
+
+from tkinter import *
+import sqlite3 as sql
+import common
 import ops
 
 
-#user login methods
+
 def openLogin(lmaster):
 	login_window=Toplevel(lmaster)
 	login_window.title('Login')
@@ -81,19 +90,17 @@ def login(master, master_master, uname, pwd):
 		if(p==''):
 			ops.openAlert(master, master_master, 'Please fill everything out!', 'Okay', False)
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	cmd=query.execute(
-		"""SELECT * FROM user_accounts WHERE BINARY `pword`='%s' AND BINARY `uname`='%s'""" % (p2, p1)
+		"""SELECT * FROM user_accounts WHERE `pword`='%s' AND `uname`='%s'""" % (p2, p1)
 	)
 
-	if(cmd>0):
-		data=query.fetchall()
+	data=query.fetchall()
 
+	if(len(data)>0):
 		master.destroy()
 		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
 	else:

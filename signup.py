@@ -1,13 +1,22 @@
-#imports
+'''
+Open Inventory 1.0
+A simple, open-source solution to inventory management
+Developed by Ross Hart ("Dinn Eferet")
+Released under the GNU General Public License v3.0
 
-from tkinter import * #modules for gui
-import pymysql as sql #module for MySQL database connections
-import datetime as date #module for date
-import common #python file with useful specifications
+
+FILE DESCRIPTION:
+Python script containing sign up feature.
+'''
+
+from tkinter import *
+import sqlite3 as sql
+import datetime as date
+import common
 import ops
 
 
-#user registration methods
+
 def openNewProfile(pmaster):
 	newprofile_window=Toplevel(pmaster)
 	newprofile_window.title('Create Account')
@@ -114,17 +123,17 @@ def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
 	if(p3!=p4):
 		ops.openAlert(master, master_master, 'Passwords must match!\nTry again!', 'Okay', False)
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	used_uname=query.execute(
-		"""SELECT * FROM user_accounts WHERE BINARY `uname`='%s'""" % (p2)
+		"""SELECT * FROM user_accounts WHERE `uname`='%s'""" % (p2)
 	)
 
-	if(used_uname>0):
+	fetch=query.fetchall()
+
+	if(len(fetch)>0):
 		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another.', 'Okay', False)
 	else:
 		confirm_window=Toplevel(master_master)
@@ -140,7 +149,7 @@ def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
 		msg.place(relx=0.5, rely=0.1, anchor=N)
 
 		yep=Button(
-			confirm_window, text='Yes! Sign Me Up!', 
+			confirm_window, text='Yes, sign me up!', 
 			command=lambda: signup(confirm_window, master, master_master, p1, p2, p3), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -148,7 +157,7 @@ def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
 		yep.place(relx=0.3, rely=0.7, anchor=CENTER)
 
 		nope=Button(
-			confirm_window, text='No! Take Me Back!', 
+			confirm_window, text='No, take me back!', 
 			command=lambda: ops.closeToplevel(confirm_window, master, master_master, False), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
@@ -169,9 +178,7 @@ def signup(confirm_window, master, master_master, bname, uname, pwd):
 	ops.closeToplevel(confirm_window, master, master_master, False)
 
 
-	db=sql.connect(
-		host='localhost', user='open_inventory', passwd='open_inventory', db='open_inventory_desktop'
-	)
+	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
@@ -180,32 +187,22 @@ def signup(confirm_window, master, master_master, bname, uname, pwd):
 		"""INSERT INTO user_accounts VALUES ('%s', '%s', '%s', '%s')""" % (bname, uname, pwd, date.datetime.now().strftime('%Y/%m/%d'))
 	)
 
-	save_transactions=query.execute(
-		"""COMMIT"""
-	)
-
 	item_table=query.execute(
 		"""CREATE TABLE IF NOT EXISTS `%s_items` (`item_name` varchar(33) PRIMARY KEY UNIQUE NOT NULL, `quantity` integer, `price` float)""" % (uname.lower())
-	)
-
-	save_transactions=query.execute(
-		"""COMMIT"""
 	)
 
 	sales_table=query.execute(
 		"""CREATE TABLE IF NOT EXISTS `%s_sales` (`item_name` varchar(33) NOT NULL, `quantity_bought` integer, `amount_paid` float, `date_of_sale` date)""" % (uname.lower())
 	)
 
-	save_transactions=query.execute(
-		"""COMMIT"""
-	)
+	db.commit()
 	
 	get_new_profile=query.execute(
-		"""SELECT * FROM user_accounts WHERE BINARY `pword`='%s' AND BINARY `uname`='%s'""" % (pwd, uname)
+		"""SELECT * FROM user_accounts WHERE `pword`='%s' AND `uname`='%s'""" % (pwd, uname)
 	)
 
-	if(get_new_profile>0):
-		data=query.fetchall()
+	data=query.fetchall()
 
+	if(len(data)>0):
 		master.destroy()
 		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
