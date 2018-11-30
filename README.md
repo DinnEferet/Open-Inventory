@@ -33,4 +33,4 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 * **Operating System:** Windows
 
 ### Future Implementations:
-I intend to migrate Open Inventory into a Python web-development framework -- preferably Django -- which will allow for far more features and flexibility.
+Circumstances permitting, Open Inventory will eventually be migrated to a Python-based web-development framework -- preferably Django -- which will allow for far more features and flexibility.
