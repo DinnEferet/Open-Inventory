@@ -36,4 +36,8 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 Circumstances permitting, Open Inventory will eventually be migrated to a Python-based web-development framework -- preferably Django -- which will allow for far more features and flexibility.
 
 ### For Developers:
-* The root file for the application is ```open-inventory.py```. With Python (at least 3.5) installed on your system, run it in Command Prompt/Terminal (code may need to be tweaked a bit for Linux) from wherever the file is saved, using ```python open-inventory.py```. No other system requirements except Python. SQLite database comes with Python.
+The root file for the application is ```open-inventory.py```. With Python (at least 3.5) installed on your system, run it in Command Prompt/Terminal (code may need to be tweaked a bit for Linux) from wherever the file is saved, using 
+```bash
+  python open-inventory.py
+  ```
+  No other system requirements except Python. SQLite database comes with Python.
