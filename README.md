@@ -1,4 +1,4 @@
-# Open-Inventory
+# Open Inventory
 
 ### Version: 
 1.0
