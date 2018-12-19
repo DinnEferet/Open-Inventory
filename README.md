@@ -32,7 +32,7 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 * **Hardware:** PC
 * **Operating System:** Windows
 
-### For Developers:
+### Info For Developers:
 
 #### Running from source:
 The root file for the application is ```open-inventory.py```. With Python (at least 3.5) installed on your system, run it in Windows Command Prompt from where the file is saved, using ```python open-inventory.py```.
