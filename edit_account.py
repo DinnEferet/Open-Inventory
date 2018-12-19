@@ -134,6 +134,8 @@ def openEditAccount(master, master_master, user_uname, user_bname):
 	)
 	close.place(relx=0.55, rely=0.8)
 
+	db.close()
+
 	window.focus_force()
 	window.grab_set()
 	window.transient(master)
@@ -231,6 +233,7 @@ def editAccount(confirm_window, add_window, master, master_master, user_uname, n
 		)
 
 	db.commit()
+	db.close()
 
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)

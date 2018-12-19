@@ -233,12 +233,12 @@ def openMainStats(master, master_master, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.1)
 
-		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+		most_sold_item=pd.read_sql("SELECT item_name, case sum(quantity_bought) when 1 then ' (' || sum(quantity_bought) || ' unit sold)' else ' (' || sum(quantity_bought) || ' units sold)' end FROM %s_sales GROUP BY item_name ORDER BY sum(quantity_bought) DESC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
 		if(most_sold_item.empty):
 			Message(
 				other_stats_frame, 
-				text="Most Popular Item:", 
+				text="Most Sold Item Overall:", 
 				width=220, font=(common.fonts['common text'], 11, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
@@ -254,7 +254,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		else:
 			Message(
 				other_stats_frame, 
-				text="Most Popular Item:", 
+				text="Most Sold Item Overall:", 
 				width=220, font=(common.fonts['common text'], 11, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
@@ -268,12 +268,12 @@ def openMainStats(master, master_master, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.3)
 
-		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
+		least_sold_item=pd.read_sql("SELECT item_name, case sum(quantity_bought) when 1 then ' (' || sum(quantity_bought) || ' unit sold)' else ' (' || sum(quantity_bought) || ' units sold)' end FROM %s_sales GROUP BY item_name ORDER BY sum(quantity_bought) ASC LIMIT 1" % (user_uname.lower()), con=db, index_col=None)
 
 		if(least_sold_item.empty or least_sold_item.to_string(index=False, justify='left', header=False)==most_sold_item.to_string(index=False, justify='left', header=False)):
 			Message( 
 				other_stats_frame, 
-				text="Least Popular Item:", 
+				text="Least Sold Item Overall:", 
 				width=220, font=(common.fonts['common text'], 11, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
@@ -289,7 +289,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 		else:
 			Message( 
 				other_stats_frame, 
-				text="Least Popular Item:", 
+				text="Least Sold Item Overall:", 
 				width=220, font=(common.fonts['common text'], 11, 'bold'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
@@ -397,6 +397,8 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			font=(common.fonts['common text'], 12, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text']
 		).place(relx=0.38, rely=0.2)
+
+	db.close()
 
 
 	Button(

@@ -11,15 +11,18 @@ Run from Command Prompt
 Must be used with care; do not use without understandng the database structure!
 '''
 
-import sqlite3
+import sqlite3 as sql
 
 
-conn = sqlite3.connect('./data.sqlite')
-c = conn.cursor()
+db = sql.connect('./data.sqlite')
+c = db.cursor()
+
 
 c.execute(
 	""
 )
 
-conn.commit()
-conn.close()
+print(c.fetchall())
+
+db.commit()
+db.close()

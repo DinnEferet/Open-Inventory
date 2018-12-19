@@ -173,6 +173,8 @@ def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
 
 		confirm_window.mainloop()
 
+	db.close()
+
 
 def signup(confirm_window, master, master_master, bname, uname, pwd):
 	ops.closeToplevel(confirm_window, master, master_master, False)
@@ -206,3 +208,5 @@ def signup(confirm_window, master, master_master, bname, uname, pwd):
 	if(len(data)>0):
 		master.destroy()
 		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
+
+	db.close()

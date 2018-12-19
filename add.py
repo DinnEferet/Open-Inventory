@@ -171,6 +171,8 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 
 		confirm_window.mainloop()
 
+	db.close()
+
 
 def addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname,  user_bname, iname, iqty, iprice):
 	db=sql.connect('./data.sqlite')
@@ -182,6 +184,7 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 	)
 
 	db.commit()
+	db.close()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

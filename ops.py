@@ -118,6 +118,8 @@ def populateInventory(user_uname, inventory_frame):
 			bg=common.colors['inventory']
 		).place(relx=0.2, rely=0.24)
 
+	db.close()
+
 def searchInventory(master, master_master, user_uname, inventory_frame, srch_item):
 
 	db=sql.connect('./data.sqlite')
@@ -216,6 +218,8 @@ def searchInventory(master, master_master, user_uname, inventory_frame, srch_ite
 			master.protocol('WM_DELETE_WINDOW', common.__ignore)
 
 			alert_window.mainloop()
+
+	db.close()
 
 
 def openInventory(imaster, user_uname, user_bname):
@@ -396,12 +400,12 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 		data_container.configure(bg=common.colors['info sheet'])
 
 		get_sale_dates=query.execute(
-			"""SELECT date_of_sale FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%Y'), str('%Y'))
+			"""SELECT date_of_sale FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%w'), str('%w'))
 		)
 		sale_dates=query.fetchall()
 
 		get_sale_counts=query.execute(
-			"""SELECT count(item_name) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%Y'), str('%Y'))
+			"""SELECT count(item_name) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY date_of_sale""" % (user_uname.lower(), str('%w'), str('%w'))
 		)
 		sale_counts=query.fetchall()
 
@@ -469,7 +473,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 		)
 		other_stats_frame.place(relx=0.09, rely=0.5)
 
-		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now'))" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
+		week_revenue=pd.read_sql("SELECT SUM(amount_paid) FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now'))" % (user_uname.lower(), str('%w'), str('%w')), con=db, index_col=None)
 
 		if(week_revenue.to_string(index=False, justify='left', header=False)=='None'):
 			Message(
@@ -504,7 +508,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.1)
 
-		most_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY count(item_name) DESC LIMIT 1" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
+		most_sold_item=pd.read_sql("SELECT item_name, case sum(quantity_bought) when 1 then ' (' || sum(quantity_bought) || ' unit sold)' else ' (' || sum(quantity_bought) || ' units sold)' end FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY sum(quantity_bought) DESC LIMIT 1" % (user_uname.lower(), str('%w'), str('%w')), con=db, index_col=None)
 
 		if(most_sold_item.empty):
 			Message(
@@ -539,7 +543,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.3)
 
-		least_sold_item=pd.read_sql("SELECT item_name FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY count(item_name) ASC LIMIT 1" % (user_uname.lower(), str('%Y'), str('%Y')), con=db, index_col=None)
+		least_sold_item=pd.read_sql("SELECT item_name, case sum(quantity_bought) when 1 then ' (' || sum(quantity_bought) || ' unit sold)' else ' (' || sum(quantity_bought) || ' units sold)' end FROM %s_sales WHERE strftime('%s', date_of_sale) = strftime('%s', date('now')) GROUP BY item_name ORDER BY sum(quantity_bought) ASC LIMIT 1" % (user_uname.lower(), str('%w'), str('%w')), con=db, index_col=None)
 
 		if(least_sold_item.empty or least_sold_item.to_string(index=False, justify='left', header=False)==most_sold_item.to_string(index=False, justify='left', header=False)):
 			Message( 
@@ -667,6 +671,8 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 			fg=common.colors['menu text'],
 			bg=common.colors['info sheet']
 		).place(relx=0.35, rely=0.2)
+
+	db.close()
 
 
 	stats_footer=Frame(

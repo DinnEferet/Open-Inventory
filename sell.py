@@ -111,6 +111,8 @@ def openSellItem(master, master_master, inventory_frame, stats_frame, user_uname
 	else:
 		ops.openAlert(master, master_master, 'You have no items to sell! \nMaybe add a few?', 'Okay', True)
 
+	db.close()
+
 
 def confirmSellItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, iqty):
 	p1=user_uname
@@ -197,6 +199,8 @@ def confirmSellItem(add_window, master, master_master, inventory_frame, stats_fr
 	else:
 		ops.xopenAlert(add_window, master, master_master, 'Item not found!\nCheck that full name is correct.', 'Okay')
 
+	db.close()
+
 
 
 def sellItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, stored_iqty, sold_iqty):
@@ -223,6 +227,7 @@ def sellItem(confirm_window, add_window, master, master_master, inventory_frame,
 
 
 	db.commit()
+	db.close()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)

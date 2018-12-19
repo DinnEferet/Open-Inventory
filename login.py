@@ -105,3 +105,5 @@ def login(master, master_master, uname, pwd):
 		ops.openInventory(master_master, (data[0])[1], (data[0])[0])
 	else:
 		ops.openAlert(master, master_master, 'Invalid login details!\nCheck your username and password.', 'Okay', False)
+
+	db.close()

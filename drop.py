@@ -88,6 +88,8 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 	else:
 		ops.openAlert(master, master_master, 'You have no items to remove!', 'Okay', True)
 
+	db.close()
+
 
 def confirmDropItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
 	p1=iname.get()
@@ -147,6 +149,8 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 	else:
 		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your Inventory! Maybe check your spelling?', 'Okay')
 
+	db.close()
+
 
 def dropItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname):
 	db=sql.connect('./data.sqlite')
@@ -162,6 +166,7 @@ def dropItem(confirm_window, add_window, master, master_master, inventory_frame,
 	)
 
 	db.commit()
+	db.close()
 
 	ops.populateInventory(user_uname, inventory_frame)
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)
