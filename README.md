@@ -35,7 +35,9 @@ Open Inventory is a simple, open-source solution to inventory management, writte
 ### Info For Developers:
 
 #### Running from source:
-The root file for the application is ```open-inventory.py```. With Python (at least 3.5) installed on your system, run it in Windows Command Prompt from where the file is saved, using ```python open-inventory.py```.
+The root file for the application is ```open-inventory.py```. With Python (at least 3.5) installed on your system, run it in Windows Command Prompt from where the file is saved, using ```python open-inventory.py```. You can create a new account if you like, but there's a default account with the following credentials:
+* **Username:** test
+* **Password:** test
 
 #### Dependencies:
 All the modules listed above come with the Python installation by default, except ```Pmw```, ```pandas``` and ```matplotlib```. These can be installed using ```pip```.
