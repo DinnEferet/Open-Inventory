@@ -22,7 +22,5 @@ c.execute(
 	""
 )
 
-print(c.fetchall())
-
-db.commit()
+#db.commit()
 db.close()
