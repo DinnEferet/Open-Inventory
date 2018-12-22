@@ -101,7 +101,6 @@ def openAddItem(master, master_master, inventory_frame, stats_frame, user_uname,
 
 
 def confirmAddItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, iname, iqty, iprice):
-	p1=user_uname
 	p2=iname.get()
 	p3=iqty.get()
 	p4=iprice.get()
@@ -124,13 +123,13 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 	query=db.cursor()
 
 	item_exists=query.execute(
-		"""SELECT * FROM %s_items WHERE `item_name`='%s'""" % (p1.lower(), p2)
+		"""SELECT * FROM %s_items WHERE `item_name`='%s'""" % (user_uname.lower(), p2)
 	)
 
 	fetch=query.fetchall()
 
 	if(len(fetch)>0):
-		ops.xopenAlert(add_window, master, master_master, 'Item with that name already exits! \nPlease choose another name.', 'Okay')
+		ops.xopenAlert(add_window, master, master_master, 'Item with that name already exists! \nPlease choose another name.', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
@@ -147,7 +146,7 @@ def confirmAddItem(add_window, master, master_master, inventory_frame, stats_fra
 
 		yep=Button(
 			confirm_window, text='Yes, add my item!', 
-			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, p3, p4), 
+			command=lambda: addItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, p2, p3, p4), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=15
 		)
@@ -190,7 +189,3 @@ def addItem(confirm_window, add_window, master, master_master, inventory_frame, 
 	ops.showStats(master, master_master, stats_frame, user_uname, user_bname)
 	ops.xcloseToplevel(confirm_window, add_window, master, master_master)
 	ops.closeToplevel(add_window, master, master_master, True)
-
-
-def ignore():
-	pass

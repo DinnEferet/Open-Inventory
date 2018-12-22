@@ -134,7 +134,7 @@ def confirm_signup(master, master_master, bname, uname, pwd, cpwd):
 	fetch=query.fetchall()
 
 	if(len(fetch)>0):
-		ops.openAlert(master, master_master, 'Username already exits! \nPlease pick another.', 'Okay', False)
+		ops.openAlert(master, master_master, 'Username already exists! \nPlease pick another.', 'Okay', False)
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')

@@ -121,7 +121,7 @@ def openEditItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 		edit_item=Button(
 			window, text='Save', 
-			command=lambda: confirmEditItem(window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, old_iname.get(), iname, iqty, iprice), 
+			command=lambda: confirmEditItem(window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, old_iname, iname, iqty, iprice), 
 			bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 			font=(common.fonts['common text'], 10, 'normal'), width=8
 		)
@@ -149,8 +149,7 @@ def openEditItem(master, master_master, inventory_frame, stats_frame, user_uname
 
 
 def confirmEditItem(add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, old_iname, iname, iqty, iprice):
-	p1=user_uname
-	p2=old_iname
+	p2=old_iname.get()
 	p3=iname.get()
 	p4=iqty.get()
 	p5=iprice.get()
@@ -161,6 +160,16 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 
 	if(p3=='' and p4=='' and p5==''):
 		ops.xopenAlert(add_window, master, master_master, 'You haven\'t entered anything!', 'Okay')
+
+	if(p3!=''):
+		cmd=query.execute(
+			"""SELECT `item_name` FROM `%s_items` WHERE `item_name`='%s'""" % (user_uname.lower(), p3)
+		)
+
+		fetch=query.fetchall()
+
+		if(len(fetch)>0):
+			ops.xopenAlert(add_window, master, master_master, 'Item with that name already exists! \nPlease choose another name.', 'Okay')
 	
 
 	if(p4!=''):
@@ -178,7 +187,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 
 	if(p3!='' or p4!='' or p5!=''):
 		cmd=query.execute(
-			"""SELECT `item_name` FROM `%s_items` WHERE `item_name`='%s'""" % (user_uname.lower(), old_iname)
+			"""SELECT `item_name` FROM `%s_items` WHERE `item_name`='%s'""" % (user_uname.lower(), p2)
 		)
 
 		fetch=query.fetchall()
@@ -199,7 +208,7 @@ def confirmEditItem(add_window, master, master_master, inventory_frame, stats_fr
 
 			yep=Button(
 				confirm_window, text='Yes, save my edit!', 
-				command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, p1, user_bname, p2, p3, p4, p5), 
+				command=lambda: editItem(confirm_window, add_window, master, master_master, inventory_frame, stats_frame, user_uname, user_bname, p2, p3, p4, p5), 
 				bg=common.colors['option'], fg=common.colors['option text'], relief=RAISED, 
 				font=(common.fonts['common text'], 10, 'normal'), width=15
 			)
@@ -258,6 +267,10 @@ def editItem(confirm_window, add_window, master, master_master, inventory_frame,
 	if(iname!=''):
 		cmd=query.execute(
 			"""UPDATE `%s_items` SET `item_name`='%s' WHERE `item_name`='%s'""" % (user_uname.lower(), iname, old_iname)
+		)
+
+		cmd=query.execute(
+			"""UPDATE `%s_sales` SET `item_name`='%s' WHERE `item_name`='%s'""" % (user_uname.lower(), iname, old_iname)
 		)
 
 

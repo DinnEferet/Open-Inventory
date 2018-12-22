@@ -22,5 +22,5 @@ c.execute(
 	""
 )
 
-#db.commit()
+db.commit()
 db.close()

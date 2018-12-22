@@ -10,18 +10,21 @@ Python script contaning item deletion feature.
 '''
 
 from tkinter import *
+import Pmw
 import sqlite3 as sql
 import common
 import ops
 
 
 def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname, user_bname):
+	item_list=()
+
 	db=sql.connect('./data.sqlite')
 
 	query=db.cursor()
 
 	inventory_has_items=query.execute(
-		"""SELECT * FROM %s_items""" % (user_uname.lower())
+		"""SELECT * FROM %s_items ORDER BY item_name ASC""" % (user_uname.lower())
 	)
 
 	fetch=query.fetchall()
@@ -40,26 +43,27 @@ def openDropItem(master, master_master, inventory_frame, stats_frame, user_uname
 		title.place(relx=0.5, rely=0.03, anchor=N)
 		
 		iname_label=Label(
-			window, text='Item Name', font=(common.fonts['common text'], 11, 'normal'), 
+			window, text='Select Item', font=(common.fonts['common text'], 11, 'normal'), 
 			fg=common.colors['menu text']
 		)
 		iname_label.place(relx=0.15, rely=0.3)
 
-		iname=StringVar()
-
 		subtitle2=Message(
-			window, text='(must be typed in full)', width=200, 
+			window, text='(or type name in full)', width=200, 
 			font=(common.fonts['common text'], 8, 'normal'), justify=CENTER, 
 			fg=common.colors['menu text']
 		)
 		subtitle2.place(relx=0.1, rely=0.42)
 
-		iname_input=Entry(
-			window, width=20, textvariable=iname, font=(common.fonts['common text'], 11, 'normal'),
-			fg=common.colors['menu text']
+		for item in fetch:
+			item_list+=(str(item[0]),)
+
+		iname=Pmw.ComboBox(
+			window, listbox_width=11, dropdown=1, scrolledlist_items=item_list,
+			listheight=100, fliparrow=True
 		)
-		iname_input.place(relx=0.4, rely=0.3)
-		iname_input.focus()
+		iname.place(relx=0.4, rely=0.31)
+		iname.selectitem(item_list[0])
 
 
 		drop_item=Button(
@@ -147,7 +151,7 @@ def confirmDropItem(add_window, master, master_master, inventory_frame, stats_fr
 
 		confirm_window.mainloop()
 	else:
-		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your Inventory! Maybe check your spelling?', 'Okay')
+		ops.xopenAlert(add_window, master, master_master, 'No item with that name in your inventory! Maybe check your spelling?', 'Okay')
 
 	db.close()
 

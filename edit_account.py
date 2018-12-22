@@ -152,9 +152,20 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 	p3=new_uname.get()
 	p4=new_pword.get()
 
+	db=sql.connect('./data.sqlite')
+
+	query=db.cursor()
+
+	used_uname=query.execute(
+		"""SELECT * FROM user_accounts WHERE `uname`='%s'""" % (p3)
+	)
+
+	fetch=query.fetchall()
 
 	if(p2=='' and p3=='' and p4==''):
 		ops.xopenAlert(add_window, master, master_master, 'You haven\'t entered anything!', 'Okay')
+	elif(len(fetch)>0):
+		ops.xopenAlert(add_window, master, master_master, 'Username already exists! \nPlease pick another.', 'Okay')
 	else:
 		confirm_window=Toplevel(master_master)
 		confirm_window.title('')
@@ -201,6 +212,8 @@ def confirmEditAccount(add_window, master, master_master, user_uname, new_bname,
 		add_window.protocol('WM_DELETE_WINDOW', common.__ignore)
 
 		confirm_window.mainloop()
+
+	db.close()
 
 
 def editAccount(confirm_window, add_window, master, master_master, user_uname, new_bname, new_uname, new_pword):

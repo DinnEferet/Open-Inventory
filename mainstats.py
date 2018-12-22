@@ -263,7 +263,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			Message(
 				other_stats_frame, 
 				text=most_sold_item.to_string(index=False, justify='left', header=False), 
-				width=220, font=(common.fonts['common text'], 9, 'normal'), justify=LEFT, 
+				width=260, font=(common.fonts['common text'], 9, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.3)
@@ -298,7 +298,7 @@ def openMainStats(master, master_master, user_uname, user_bname):
 			Message(
 				other_stats_frame, 
 				text=least_sold_item.to_string(index=False, justify='left', header=False), 
-				width=220, font=(common.fonts['common text'], 9, 'normal'), justify=LEFT, 
+				width=260, font=(common.fonts['common text'], 9, 'normal'), justify=LEFT, 
 				fg=common.colors['menu text'],
 				bg=common.colors['info sheet']
 			).place(relx=0.05, rely=0.5)

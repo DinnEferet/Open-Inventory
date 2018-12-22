@@ -85,19 +85,19 @@ def populateInventory(user_uname, inventory_frame):
 			Label(
 				data_frame, text=row[0], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=24,
-				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1
 			).place(relx=0.02, rely=0.1)
 
 			Label( 
 				data_frame, text=row[1], font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1
 			).place(relx=0.4, rely=0.1)
 
 			Label(
 				data_frame, text=u'\u20A6'+str(row[2]), font=(common.fonts['common text'], 10, 'normal'),
 				fg=common.colors['header text'], bg=common.colors['inventory'], width=18,
-				borderwidth=2, relief=GROOVE, pady=1, justify=CENTER
+				borderwidth=2, relief=GROOVE, pady=1
 			).place(relx=0.7, rely=0.1)
 
 			data_pane.create_window(300, j, window=data_frame)
@@ -392,7 +392,7 @@ def showStats(master, master_master, stats_frame, user_uname, user_bname):
 	if(len(sales)>0):
 		data_pane=Pmw.ScrolledCanvas(
 			stats_frame, hull_width=256, hull_height=310, usehullsize=1, borderframe=1,
-			vscrollmode='dynamic', hscrollmode='none'
+			vscrollmode='dynamic', hscrollmode='dynamic'
 		)
 
 		data_container=data_pane.interior()
