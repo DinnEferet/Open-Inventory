@@ -1,3 +1,5 @@
+<span style="color:red">This project is no longer maintained by its author.</span>
+
 # Open Inventory
 
 ### Version: 
