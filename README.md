@@ -1,4 +1,4 @@
-_This project is no longer maintained by its author._
+_This project is no longer maintained._
 
 
 # Open Inventory
